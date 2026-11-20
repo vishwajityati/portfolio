@@ -1,0 +1,47 @@
+.admin-page {
+    min-height: 100vh;
+    padding-bottom: 35px;
+}
+.admin-loading {
+    min-height: 55vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    color: var(--muted);
+    font-size: 1rem;
+}
+.spin {
+    animation: slow-spin 1s linear infinite;
+}
+.session-warning {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 20px;
+    background: #1a1a2e;
+    border: 1px solid #f59e0b;
+    border-radius: 10px;
+    color: #fbbf24;
+    font-size: 0.95rem;
+    font-weight: 500;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+.session-warning button {
+    padding: 6px 14px;
+    background: transparent;
+    border: 1px solid #f59e0b;
+    border-radius: 6px;
+    color: #fbbf24;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.session-warning button:hover {
+    background: rgba(245, 158, 11, 0.15);
+}

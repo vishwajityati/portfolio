@@ -1,0 +1,606 @@
+/* =========================================================
+   BOTTOM NAVIGATION — RESPONSIVE FOR ALL DEVICES
+   ========================================================= */
+
+.bottom-nav {
+    --nav-bg: rgba(8, 11, 17, 0);
+    --nav-border: rgba(203, 216, 233, 0);
+    --nav-text: rgba(241, 241, 237, 0.836);
+
+    position: fixed;
+    left: 50%;
+    bottom: max(16px, env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+
+    width: min(800px, calc(100vw - 40px));
+    box-sizing: border-box;
+    z-index: 1000;
+
+    padding: 6px;
+    border: 1px solid var(--nav-border);
+    border-radius: 20px;
+    background: var(--nav-bg);
+
+    backdrop-filter: blur(70px) saturate(150%);
+    -webkit-backdrop-filter: blur(70px) saturate(150%);
+
+    transition: width 0.3s ease, border-radius 0.3s ease, padding 0.3s ease;
+}
+
+
+/* =========================================================
+   BORDER GLOW
+   ========================================================= */
+
+.bottom-nav::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+
+    background: linear-gradient(
+        110deg,
+        rgba(34, 211, 238, 0),
+        rgba(59, 131, 246, 0) 30%,
+        rgba(169, 85, 247, 0) 58%,
+        rgba(249, 116, 22, 0) 82%,
+        rgba(236, 72, 154, 0)
+    );
+    mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+}
+
+
+/* =========================================================
+   DESKTOP NAVIGATION (default)
+   ========================================================= */
+
+.desktop-navigation {
+    width: 100%;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 4px;
+}
+
+
+/* =========================================================
+   NAV LINK
+   ========================================================= */
+
+.nav-link {
+    position: relative;
+    flex: 0 0 auto;
+    min-height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    padding: 8px 12px;
+    border: 1px solid transparent;
+    border-radius: 15px;
+
+    color: var(--nav-text);
+    text-decoration: none;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    white-space: nowrap;
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.nav-index {
+    position: absolute;
+    top: 7px;
+    left: 8px;
+    color: var(--dim);
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+}
+
+
+.nav-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nav-link:hover {
+    color: var(--text);
+    background: rgba(165, 241, 200, 0.06);
+    border-color: rgba(203, 216, 233, 0.15);
+    transform: translateY(-1px);
+}
+
+
+
+.nav-link.active .nav-index {
+    color: var(--mint);
+}
+
+.nav-link.active .nav-icon {
+    color: var(--cyan);
+    opacity: 1;
+}
+
+.nav-link.active::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 2px;
+    width: 55px;
+    height: 3px;
+    transform: translateX(-50%);
+    border-radius: 999px;
+    background: var(--mint);
+    box-shadow: 0 0 7px rgba(165, 241, 200, 0.829);
+}
+
+
+/* =========================================================
+   MOBILE NAVIGATION (hidden on desktop)
+   ========================================================= */
+
+.mobile-navigation {
+    display: none;
+}
+
+.mobile-section-links {
+    display: none;
+}
+
+
+/* =========================================================
+   LARGE DESKTOP — 1400px and up
+   ========================================================= */
+
+@media (min-width: 1400px) {
+    .bottom-nav {
+        width: min(900px, calc(100vw - 60px));
+        padding: 7px;
+        border-radius: 22px;
+    }
+
+    .nav-link {
+        min-height: 54px;
+        padding: 8px 16px;
+        font-size: 1rem;
+        gap: 8px;
+    }
+
+    .nav-icon svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+
+/* =========================================================
+   SMALL DESKTOP / LARGE LAPTOP — 1025px to 1399px
+   ========================================================= */
+
+@media (min-width: 1025px) and (max-width: 1399px) {
+    .bottom-nav {
+        width: min(760px, calc(100vw - 48px));
+    }
+
+    .nav-link {
+        padding: 8px 10px;
+        font-size: 0.90625rem;
+    }
+}
+
+
+/* =========================================================
+   TABLET LANDSCAPE / SMALL LAPTOP — 769px to 1024px
+   ========================================================= */
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .bottom-nav {
+        width: min(630px, calc(80vw - 22px));
+        bottom: max(8px, env(safe-area-inset-bottom));
+        padding: 5px;
+        border-radius: 18px;
+        font-size: 10px;
+        
+
+    }
+
+    .desktop-navigation {
+        gap: 0.5px;
+    }
+
+    .nav-link {
+        min-height: 28px;
+        padding: 7px 9px;
+        gap: 2px;
+        border-radius: 13px;
+    }
+
+    .nav-index {
+        top: 5px;
+        left: 6px;
+    }
+
+    .nav-icon svg {
+        width: 15px;
+        height: 15px;
+    }
+}
+
+
+/* =========================================================
+   TABLET PORTRAIT — 601px to 768px
+   ========================================================= */
+
+@media (min-width: 601px) and (max-width: 768px) {
+    .bottom-nav {
+        width: min(500px, calc(100vw - 24px));
+        bottom: max(10px, env(safe-area-inset-bottom));
+        padding: 5px;
+        border-radius: 16px;
+    }
+
+    .desktop-navigation {
+        gap: 2px;
+    }
+
+    .nav-link {
+        min-height: 46px;
+        padding: 6px 7px;
+        gap: 1px;
+        font-size: 0.625em;
+        border-radius: 12px;
+    }
+
+    .nav-index {
+        display: none;
+    }
+
+    .nav-icon svg {
+        width: 14px;
+        height: 14px;
+    }
+}
+
+
+/* =========================================================
+   SMALL TABLET / LARGE PHONE — 481px to 600px
+   ========================================================= */
+
+@media (min-width: 481px) and (max-width: 600px) {
+    .bottom-nav {
+        width: calc(100vw - 20px);
+        bottom: max(6px, env(safe-area-inset-bottom));
+        padding: 4px;
+        border-radius: 14px;
+    }
+
+    .desktop-navigation {
+        gap: 0.5px;
+        justify-content: space-between;
+    }
+
+    .nav-link {
+        flex: 1 1 0;
+        min-width: 0;
+        min-height: 44px;
+        padding: 6px 4px;
+        gap: 0.5px;
+        font-size: 0.565rem;
+        border-radius: 10px;
+    }
+
+    .nav-index {
+        display: none;
+    }
+
+    .nav-icon svg {
+        width: 13px;
+        height: 13px;
+    }
+}
+
+
+/* =========================================================
+   MOBILE — up to 480px (icon-only + popup)
+   ========================================================= */
+
+@media (max-width: 480px) {
+    .bottom-nav {
+        width: min(280px, calc(100vw - 24px));
+        bottom: max(10px, env(safe-area-inset-bottom));
+        padding: 5px;
+        border-radius: 17px;
+    }
+
+    .desktop-navigation {
+        display: none;
+    }
+
+    .mobile-navigation {
+        display: flex;
+        width: 100%;
+        flex-direction: row;
+        align-items: stretch;
+        justify-content: stretch;
+        gap: 4px;
+    }
+
+    .mobile-nav-button {
+        flex: 1 1 0;
+        min-width: 0;
+        height: 48px;
+        min-height: 48px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border: 1px solid transparent;
+        border-radius: 12px;
+        color: var(--nav-text);
+        background: transparent;
+        cursor: pointer;
+
+        transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .mobile-nav-button svg {
+        width: 20px;
+        height: 20px;
+        flex: 0 0 auto;
+    }
+
+    .mobile-nav-button span {
+        display: none;
+    }
+
+    .mobile-nav-button.active {
+        color: var(--cyan);
+        background: linear-gradient(
+            135deg,
+            rgba(165, 241, 200, 0.08),
+            rgba(118, 217, 209, 0.05),
+            rgba(185, 162, 255, 0.06)
+        );
+        border-color: rgba(165, 241, 200, 0.16);
+    }
+
+    .mobile-nav-button.active svg {
+        color: var(--cyan);
+        filter: drop-shadow(0 0 5px rgba(118, 217, 209, 0.35));
+    }
+
+    /* Sections popup */
+    .mobile-section-links {
+        position: absolute;
+        left: 50%;
+        bottom: calc(100% + 9px);
+        transform: translateX(-50%);
+
+        width: min(240px, calc(100vw - 30px));
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 4px;
+        padding: 7px;
+
+        border: 1px solid var(--nav-border);
+        border-radius: 13px;
+        background: rgba(8, 11, 17, 0.94);
+
+        backdrop-filter: blur(18px) saturate(125%);
+        -webkit-backdrop-filter: blur(18px) saturate(125%);
+        z-index: 2000;
+    }
+
+    .mobile-section-links a {
+        min-height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 7px;
+
+        color: var(--nav-text);
+        border: 1px solid transparent;
+        border-radius: 8px;
+        text-decoration: none;
+        font-family: var(--mono);
+        font-size: 0.75rem;
+
+        transition: color 0.2s ease, background 0.2s ease;
+    }
+
+    .mobile-section-links a.active {
+        color: var(--cyan);
+        background: rgba(165, 241, 200, 0.06);
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE — up to 360px
+   ========================================================= */
+
+@media (max-width: 360px) {
+    .bottom-nav {
+        width: min(250px, calc(100vw - 20px));
+        padding: 4px;
+        gap: 3px;
+    }
+
+    .mobile-nav-button {
+        height: 44px;
+        min-height: 44px;
+    }
+
+    .mobile-nav-button svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .mobile-section-links {
+        width: min(210px, calc(100vw - 24px));
+        padding: 6px;
+        gap: 3px;
+    }
+
+    .mobile-section-links a {
+        min-height: 36px;
+        padding: 5px;
+        font-size: 0.6875rem;
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE — up to 320px
+   ========================================================= */
+
+@media (max-width: 320px) {
+    .bottom-nav {
+        width: calc(100vw - 16px);
+        padding: 3px;
+        border-radius: 14px;
+    }
+
+    .mobile-navigation {
+        gap: 3px;
+    }
+
+    .mobile-nav-button {
+        height: 42px;
+        min-height: 42px;
+        border-radius: 10px;
+    }
+
+    .mobile-nav-button svg {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+
+/* =========================================================
+   LANDSCAPE ORIENTATION — short viewport height
+   ========================================================= */
+
+@media (max-height: 500px) and (orientation: landscape) {
+    .bottom-nav {
+        bottom: max(6px, env(safe-area-inset-bottom));
+        padding: 4px;
+        border-radius: 14px;
+    }
+
+    .nav-link {
+        min-height: 40px;
+        padding: 5px 10px;
+        font-size: 0.8125rem;
+    }
+
+    .nav-index {
+        display: none;
+    }
+
+    .mobile-nav-button {
+        height: 40px;
+        min-height: 40px;
+    }
+
+    .mobile-nav-button svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+
+/* =========================================================
+   LANDSCAPE PHONE — nav becomes smaller
+   ========================================================= */
+
+@media (max-height: 400px) and (orientation: landscape) {
+    .bottom-nav {
+        width: min(500px, calc(100vw - 20px));
+        padding: 3px;
+    }
+
+    .nav-link {
+        min-height: 36px;
+        padding: 4px 8px;
+        font-size: 0.75rem;
+    }
+
+    .nav-icon svg {
+        width: 13px;
+        height: 13px;
+    }
+}
+
+
+/* =========================================================
+   SHORT VIEWPORT — reduce nav size
+   ========================================================= */
+
+@media (max-height: 600px) {
+    .bottom-nav {
+        bottom: max(8px, env(safe-area-inset-bottom));
+    }
+
+    .nav-link {
+        min-height: 44px;
+    }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .bottom-nav,
+    .nav-link,
+    .mobile-nav-button,
+    .mobile-section-links a {
+        transition: none;
+    }
+}
+
+
+/* =========================================================
+   HIGH CONTRAST / FORCED COLORS
+   ========================================================= */
+
+@media (forced-colors: active) {
+    .bottom-nav {
+        border: 2px solid CanvasText;
+        background: Canvas;
+    }
+
+    .nav-link {
+        border: 1px solid transparent;
+    }
+
+    .nav-link.active {
+        border: 1px solid Highlight;
+        color: Highlight;
+    }
+
+    .nav-link.active::after {
+        background: Highlight;
+    }
+}

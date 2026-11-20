@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Next.js / build output
+.next/
+out/
+/dist/
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment files — never commit real values.
+# `.env.example` is the checked-in template; everything else stays local.
+.env
+.env.*
+!.env.example
+.neon
+
+# Local databases
+/prisma/*.db
+/prisma/*.db-journal
+/prisma/*.db-shm
+/prisma/*.db-wal
+/server/data/
+
+# Vercel
+.vercel
+
+# Generated test / local-run artifacts
+*-output.txt
+*-headers.txt
+inline-check.txt
+public-list.txt
+prod-home*.html

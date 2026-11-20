@@ -1,0 +1,147 @@
+.portfolio-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  isolation: isolate;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 76% 30%, rgba(3, 3, 3, 0.027), transparent 34%),
+    radial-gradient(ellipse at 24% 54%, rgba(0, 217, 255, 0), transparent 34%),
+    linear-gradient(110deg, rgba(255, 255, 255, 0), rgba(0, 0, 0, 0.596) 46%, transparent 76%),
+    #7c839469;
+}
+
+.space-planet-canvas,
+.background-scanlines,
+.background-vignette {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.space-planet-canvas {
+  opacity: 0.82;
+}
+
+.background-scanlines {
+  opacity: 0.18;
+  background-image:
+    linear-gradient(rgba(0, 229, 255, 0) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 229, 255, 0) 1px, transparent 1px);
+  background-size: 100% 5px, 72px 100%;
+  mix-blend-mode: screen;
+}
+
+.background-vignette {
+  background:
+    radial-gradient(ellipse at 58% 42%, transparent 32%, rgba(0, 0, 0, 0.164) 76%, rgba(0, 0, 0, 0.301) 118%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.171), rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.192));
+}
+
+/* =========================================================
+   DEVICE TIERS
+   Later rules win, so the order below is narrow -> wide ->
+   viewport-height, with the shortest viewport taking priority.
+   ========================================================= */
+
+/* Touch devices: coarser HUD grid, lighter overlay under content. */
+@media (pointer: coarse) {
+  .background-scanlines {
+    opacity: 0.14;
+    background-size: 100% 6px, 84px 100%;
+  }
+}
+
+/* Tablets and narrow desktop windows. */
+@media (max-width: 1099px) {
+  .space-planet-canvas {
+    opacity: 0.76;
+  }
+
+  .background-scanlines {
+    opacity: 0.14;
+    background-size: 100% 6px, 84px 100%;
+  }
+}
+
+/* Phones and single-column layouts. */
+@media (max-width: 768px) {
+  .portfolio-backdrop {
+    background:
+      radial-gradient(ellipse at 76% 30%, rgba(3, 3, 3, 0.027), transparent 34%),
+      radial-gradient(ellipse at 24% 54%, rgba(0, 217, 255, 0), transparent 34%),
+      linear-gradient(110deg, rgba(255, 255, 255, 0), rgba(0, 0, 0, 0.342) 46%, transparent 76%),
+      #7c83944d;
+  }
+
+  .space-planet-canvas {
+    opacity: 0.72;
+  }
+
+  .background-scanlines {
+    opacity: 0.12;
+    background-size: 100% 6px, 72px 100%;
+  }
+
+  .background-vignette {
+    background:
+      radial-gradient(ellipse at 58% 42%, transparent 32%, rgba(0, 0, 0, 0.164) 76%, rgba(0, 0, 0, 0.301) 118%),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.144), rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.377));
+  }
+}
+
+/* Small phones: the wash stays lightest behind narrow text columns. */
+@media (max-width: 420px) {
+  .space-planet-canvas {
+    opacity: 0.66;
+  }
+
+  .background-scanlines {
+    opacity: 0.1;
+    background-size: 100% 7px, 64px 100%;
+  }
+
+  .background-vignette {
+    background:
+      radial-gradient(ellipse at 58% 42%, transparent 28%, rgba(0, 0, 0, 0.2) 76%, rgba(0, 0, 0, 0.34) 118%),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.2));
+  }
+}
+
+/* Large desktops. */
+@media (min-width: 1200px) {
+  .space-planet-canvas {
+    opacity: 0.88;
+  }
+}
+
+/* Ultrawide: stretch the grid so it does not read as moire at distance. */
+@media (min-width: 1700px) {
+  .space-planet-canvas {
+    opacity: 0.9;
+  }
+
+  .background-scanlines {
+    background-size: 100% 5px, 96px 100%;
+  }
+}
+
+/* Short landscape viewports (rotated phones, split-screen windows). */
+@media (max-height: 600px) and (orientation: landscape) {
+  .space-planet-canvas {
+    opacity: 0.58;
+  }
+
+  .background-scanlines {
+    opacity: 0.1;
+    background-size: 100% 6px, 84px 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .background-scanlines {
+    opacity: 0.1;
+  }
+}
