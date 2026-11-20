@@ -6,7 +6,7 @@
     "node": ">=20.9.0 <23"
   },
   "scripts": {
-    "dev": "next dev --hostname localhost --port 5173",
+    "dev": "next dev --hostname localhost --port 5174",
     "dev:lan": "node scripts/guard-public-bind.mjs && next dev --hostname 0.0.0.0 --port 5173",
     "build": "prisma generate && next build",
     "start": "next start --hostname localhost --port 3000",

@@ -6,10 +6,9 @@
   isolation: isolate;
   pointer-events: none;
   background:
-    radial-gradient(ellipse at 76% 30%, rgba(3, 3, 3, 0.027), transparent 34%),
-    radial-gradient(ellipse at 24% 54%, rgba(0, 217, 255, 0), transparent 34%),
-    linear-gradient(110deg, rgba(255, 255, 255, 0), rgba(0, 0, 0, 0.596) 46%, transparent 76%),
-    #7c839469;
+    radial-gradient(ellipse at 72% 18%, rgba(126, 148, 180, 0.09), transparent 46%),
+    radial-gradient(ellipse at 12% 82%, rgba(86, 102, 126, 0.07), transparent 44%),
+    linear-gradient(135deg, #050608 0%, #0a0d12 48%, #050608 100%);
 }
 
 .space-planet-canvas,
@@ -22,22 +21,22 @@
 }
 
 .space-planet-canvas {
-  opacity: 0.82;
+  display: none;
 }
 
 .background-scanlines {
-  opacity: 0.18;
+  opacity: 1;
   background-image:
-    linear-gradient(rgba(0, 229, 255, 0) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 229, 255, 0) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
   background-size: 100% 5px, 72px 100%;
   mix-blend-mode: screen;
 }
 
 .background-vignette {
   background:
-    radial-gradient(ellipse at 58% 42%, transparent 32%, rgba(0, 0, 0, 0.164) 76%, rgba(0, 0, 0, 0.301) 118%),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.171), rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.192));
+    radial-gradient(ellipse at 58% 42%, transparent 34%, rgba(0, 0, 0, 0.28) 78%, rgba(0, 0, 0, 0.6) 120%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.3));
 }
 
 /* =========================================================
@@ -49,7 +48,7 @@
 /* Touch devices: coarser HUD grid, lighter overlay under content. */
 @media (pointer: coarse) {
   .background-scanlines {
-    opacity: 0.14;
+    opacity: 0.8;
     background-size: 100% 6px, 84px 100%;
   }
 }
@@ -61,7 +60,7 @@
   }
 
   .background-scanlines {
-    opacity: 0.14;
+    opacity: 0.85;
     background-size: 100% 6px, 84px 100%;
   }
 }
@@ -70,10 +69,9 @@
 @media (max-width: 768px) {
   .portfolio-backdrop {
     background:
-      radial-gradient(ellipse at 76% 30%, rgba(3, 3, 3, 0.027), transparent 34%),
-      radial-gradient(ellipse at 24% 54%, rgba(0, 217, 255, 0), transparent 34%),
-      linear-gradient(110deg, rgba(255, 255, 255, 0), rgba(0, 0, 0, 0.342) 46%, transparent 76%),
-      #7c83944d;
+      radial-gradient(ellipse at 70% 20%, rgba(126, 148, 180, 0.07), transparent 46%),
+      radial-gradient(ellipse at 10% 82%, rgba(86, 102, 126, 0.05), transparent 44%),
+      linear-gradient(135deg, #050608 0%, #090c10 48%, #050608 100%);
   }
 
   .space-planet-canvas {
@@ -81,14 +79,14 @@
   }
 
   .background-scanlines {
-    opacity: 0.12;
+    opacity: 0.8;
     background-size: 100% 6px, 72px 100%;
   }
 
   .background-vignette {
     background:
-      radial-gradient(ellipse at 58% 42%, transparent 32%, rgba(0, 0, 0, 0.164) 76%, rgba(0, 0, 0, 0.301) 118%),
-      linear-gradient(90deg, rgba(0, 0, 0, 0.144), rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.377));
+      radial-gradient(ellipse at 58% 42%, transparent 34%, rgba(0, 0, 0, 0.24) 78%, rgba(0, 0, 0, 0.55) 118%),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.24), rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.28));
   }
 }
 
@@ -99,14 +97,14 @@
   }
 
   .background-scanlines {
-    opacity: 0.1;
+    opacity: 0.7;
     background-size: 100% 7px, 64px 100%;
   }
 
   .background-vignette {
     background:
-      radial-gradient(ellipse at 58% 42%, transparent 28%, rgba(0, 0, 0, 0.2) 76%, rgba(0, 0, 0, 0.34) 118%),
-      linear-gradient(90deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.2));
+      radial-gradient(ellipse at 58% 42%, transparent 28%, rgba(0, 0, 0, 0.22) 76%, rgba(0, 0, 0, 0.5) 118%),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.24));
   }
 }
 
@@ -135,13 +133,13 @@
   }
 
   .background-scanlines {
-    opacity: 0.1;
+    opacity: 0.7;
     background-size: 100% 6px, 84px 100%;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .background-scanlines {
-    opacity: 0.1;
+    opacity: 0.7;
   }
 }

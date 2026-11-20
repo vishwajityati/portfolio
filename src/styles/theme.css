@@ -1,11 +1,11 @@
 :root {
   font-family: "DM Sans", sans-serif;
   color: #f1f1ed;
-  background: #080b11;
+  background: #07090c;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  --bg: #080b11;
+  --bg: #07090c;
   --panel: #10151e;
   --panel-soft: rgba(16, 21, 30, 0);
   --text: #f1f1ed;
