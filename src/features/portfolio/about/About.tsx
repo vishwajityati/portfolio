@@ -41,9 +41,9 @@ export function About({ content }: { content: PortfolioContent }) {
         {/* About content */}
         <div className="about-copy reveal">
           <h2>
-            Learning new things{" "}
+            Learning technologies And{" "}
             <span className="gradient-text">
-               exploring technologies Improving My Skills.
+              Improving Skills.
             </span>
           </h2>
           {/* Dynamic About content from Neon */}

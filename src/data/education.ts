@@ -2,7 +2,7 @@ import type { Education } from "@/types/education";
 
 export const education: Education[] = [{
   degree: "Bachelor of Computer Applications",
-  institution: "Chatrapati Shivaji Maharaj University, Panvel",
+  institution: "Chhatrapati Shivaji Maharaj University, Panvel",
   period: "2025 – Present",
   summary: "My BCA journey is helping me build a strong foundation in computer science and software development. Alongside my academic studies, I actively learn through practical projects and independent exploration.",
   skillGroups: [
