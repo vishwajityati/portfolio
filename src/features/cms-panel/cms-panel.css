@@ -377,48 +377,48 @@
 }
 
 /*
- * Skill rows carry a name, a level and a remove button, so they need a third column for the
+ * Knowledge rows carry a name, a level and a remove button, so they need a third column for the
  * numeric input that `.content-list-row` does not have.
  */
-.skill-admin-row {
+.knowledge-admin-row {
     grid-template-columns: minmax(0, 1fr) 92px 38px;
 }
 
-.skill-admin-level {
+.knowledge-admin-level {
     display: flex;
     align-items: center;
     gap: 4px;
 }
 
-.skill-admin-level input {
+.knowledge-admin-level input {
     width: 100%;
     text-align: right;
 }
 
 /* The native spinner crowds a 92px cell, and the arrows afford nothing here. */
-.skill-admin-level input::-webkit-outer-spin-button,
-.skill-admin-level input::-webkit-inner-spin-button {
+.knowledge-admin-level input::-webkit-outer-spin-button,
+.knowledge-admin-level input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
 
-.skill-admin-level input[type="number"] {
+.knowledge-admin-level input[type="number"] {
     -moz-appearance: textfield;
     appearance: textfield;
 }
 
-.skill-admin-level>span:last-child {
+.knowledge-admin-level>span:last-child {
     color: var(--dim);
     font: 1rem var(--mono);
 }
 
-.skill-admin-remove-group {
+.knowledge-admin-remove-group {
     margin-top: 4px;
     color: #f0a6a6;
     border-color: rgba(240, 166, 166, .22);
 }
 
-.skill-admin-remove-group:hover {
+.knowledge-admin-remove-group:hover {
     border-color: rgba(240, 166, 166, .4);
 }
 

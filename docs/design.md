@@ -60,24 +60,24 @@ instead of font size.
 
 ### Public site
 
-A single scrolling page composed of seven sections in a fixed order — hero, about, skills,
+A single scrolling page composed of seven sections in a fixed order — hero, about, knowledge,
 education, projects, experience, contact — declared in `src/data/navigation.ts`. The section IDs in
 that file are the single source of truth for navigation and for scroll observation.
 
-Skills have their own section because the dashboard has always had a dedicated Skills panel; they
+Knowledge have their own section because the dashboard has always had a dedicated Knowledge panel; they
 used to render only as tags inside the education card, which buried them in the third section. The
-values live on `education.skillGroups` in storage — each group has a `title` and a list of
+values live on `education.knowledgeGroups` in storage — each group has a `title` and a list of
 `{ name, level }` — so only the presentation moved.
 
-Proficiency bars are drawn from stepped `.skill-bar-N` classes (0–100 in 5% increments) rather
+Proficiency bars are drawn from stepped `.knowledge-bar-N` classes (0–100 in 5% increments) rather
 than an inline `width`, for the same reason the reveal stagger uses `.reveal-delay-*`: an inline
-width would require `style-src 'unsafe-inline'`, which the production policy withholds. `snapSkillLevel()`
+width would require `style-src 'unsafe-inline'`, which the production policy withholds. `snapKnowledgeLevel()`
 rounds the stored value to the nearest step so a matching class always exists.
 
-Skills were a flat `string[]` before this change. `normalizePortfolioContent` migrates a stored
-record of that shape into a single `Skills` group rather than rejecting it — otherwise the record
+Knowledge entries were a flat `string[]` before this change. `normalizePortfolioContent` migrates a stored
+record of that shape into a single `Knowledge` group rather than rejecting it — otherwise the record
 would read as malformed and the site would silently fall back to the seed content, showing the
-owner someone else's skill list.
+owner someone else's knowledge list.
 
 The section kicker numbers are hard-coded per component (`01`…`06`), so inserting a section means
 renumbering the ones after it.

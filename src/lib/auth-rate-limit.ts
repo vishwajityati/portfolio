@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 const windowMs = 15 * 60 * 1000;
 const maxAttempts = 10;
 const contactMaxAttempts = 5;
+/** Contact-form ceiling shared by every client, including spoofed addresses. */
+const contactGlobalMaxAttempts = 100;
 
 /**
  * Ceiling shared by every client. The per-address key can be spoofed by rotating
@@ -65,7 +67,7 @@ export async function checkLoginRateLimit(ipAddress: string): Promise<boolean> {
   return addressAllowed && globalAllowed;
 }
 
-export function recordFailedLogin(ipAddress: string): Promise<void> {
+export async function recordFailedLogin(ipAddress: string): Promise<void> {
   // Log failed login attempt for security monitoring.
   // The IP is hashed in the log to avoid storing raw PII.
   const hashedIp = createHash("sha256")
@@ -75,30 +77,46 @@ export function recordFailedLogin(ipAddress: string): Promise<void> {
   console.warn(
     `[security] Failed login attempt at ${new Date().toISOString()} from ${hashedIp}`
   );
-  return recordAttempt(rateLimitKey(ipAddress));
+
+  // Increment both the per-address bucket and the shared ceiling. Without the
+  // global increment the 200-attempt ceiling was never reached, so a client
+  // rotating X-Forwarded-For could bypass throttling entirely.
+  await Promise.all([
+    recordAttempt(rateLimitKey(ipAddress)),
+    recordAttempt(rateLimitKey("global", "login-global"))
+  ]);
 }
 
 export async function consumeContactMessageRateLimit(ipAddress: string): Promise<boolean> {
-  const key = rateLimitKey(ipAddress, "contact-message");
+  const addressKey = rateLimitKey(ipAddress, "contact-message");
+  const globalKey = rateLimitKey("global", "contact-message-global");
   const now = new Date();
   const resetAt = new Date(now.getTime() + windowMs);
 
   return prisma.$transaction(async (transaction) => {
-    const attempt = await transaction.loginAttempt.findUnique({ where: { key } });
-    if (!attempt || attempt.resetAt <= now) {
-      await transaction.loginAttempt.upsert({
-        where: { key },
-        create: { key, count: 1, resetAt },
-        update: { count: 1, resetAt }
-      });
-      return true;
-    }
-    if (attempt.count >= contactMaxAttempts) return false;
+    const [addressAttempt, globalAttempt] = await Promise.all([
+      transaction.loginAttempt.findUnique({ where: { key: addressKey } }),
+      transaction.loginAttempt.findUnique({ where: { key: globalKey } })
+    ]);
 
-    await transaction.loginAttempt.update({
-      where: { key },
-      data: { count: { increment: 1 } }
-    });
+    const addressCount = !addressAttempt || addressAttempt.resetAt <= now ? 0 : addressAttempt.count;
+    const globalCount = !globalAttempt || globalAttempt.resetAt <= now ? 0 : globalAttempt.count;
+    if (addressCount >= contactMaxAttempts || globalCount >= contactGlobalMaxAttempts) {
+      return false;
+    }
+
+    await Promise.all([
+      transaction.loginAttempt.upsert({
+        where: { key: addressKey },
+        create: { key: addressKey, count: addressCount + 1, resetAt },
+        update: { count: addressCount + 1, resetAt }
+      }),
+      transaction.loginAttempt.upsert({
+        where: { key: globalKey },
+        create: { key: globalKey, count: globalCount + 1, resetAt },
+        update: { count: globalCount + 1, resetAt }
+      })
+    ]);
     return true;
   }, { maxWait: transactionMaxWaitMs });
 }
@@ -124,8 +142,11 @@ export interface RateLimitSnapshot {
  */
 export async function getRateLimitSnapshot(): Promise<RateLimitSnapshot> {
   const now = new Date();
-  const globalKey = rateLimitKey("global", "login-global");
-  const clientBuckets = { key: { not: globalKey } };
+  const globalKeys = [
+    rateLimitKey("global", "login-global"),
+    rateLimitKey("global", "contact-message-global")
+  ];
+  const clientBuckets = { key: { notIn: globalKeys } };
 
   const [trackedAddresses, activeWindows, throttledAddresses, totals] = await Promise.all([
     prisma.loginAttempt.count({ where: clientBuckets }),

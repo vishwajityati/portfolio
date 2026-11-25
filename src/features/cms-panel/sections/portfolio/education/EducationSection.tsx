@@ -43,7 +43,7 @@ export function EducationSection({ content, onChange }: { content: PortfolioCont
             />
           ))}
         </div>
-        <button className="button button-add-entry" type="button" onClick={() => onChange({ ...content, education: [...content.education, { degree: "", institution: "", period: "", summary: "", skillGroups: [], beyond: "" }] })}>
+        <button className="button button-add-entry" type="button" onClick={() => onChange({ ...content, education: [...content.education, { degree: "", institution: "", period: "", summary: "", knowledgeGroups: [], beyond: "" }] })}>
           <Plus size={15} /> Add education <ArrowRight size={14} />
         </button>
       </div>

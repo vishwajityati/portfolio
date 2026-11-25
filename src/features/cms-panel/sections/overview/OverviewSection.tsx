@@ -49,13 +49,13 @@ export function OverviewSection({ content, inboxSummary, onNavigate }: OverviewS
         <StatCard label="PROJECTS" value={content.projects.length} icon={FolderKanban} tone="cyan" />
         <StatCard label="EXPERIENCE" value={content.experience.length} icon={BriefcaseBusiness} tone="purple" />
         <StatCard label="UNREAD MESSAGES" value={inboxSummary.unreadCount} icon={Inbox} tone="pink" />
-        <StatCard label="SKILL GROUPS" value={content.education[0]?.skillGroups.length ?? 0} icon={Activity} tone="blue" />
+        <StatCard label="KNOWLEDGE GROUPS" value={content.education[0]?.knowledgeGroups.length ?? 0} icon={Activity} tone="blue" />
       </div>
       <div className="analytics-main-grid">
         <section className="analytics-panel analytics-activity-panel">
           <div className="analytics-panel-heading"><div><span className="analytics-panel-kicker">CONTENT ACTIVITY</span><h3>Portfolio overview</h3></div><span className="analytics-panel-filter">Current record</span></div>
           <div className="analytics-chart-legend"><span><i className="legend-dot cyan" />Published content</span><span><i className="legend-dot purple" />Visitor inbox</span></div>
-          <div className="analytics-chart"><div className="analytics-chart-y"><span>04</span><span>03</span><span>02</span><span>01</span><span>00</span></div><div className="analytics-chart-area"><div className="analytics-grid-lines"><i /><i /><i /><i /></div><TrendLine /><div className="analytics-chart-x"><span>Projects</span><span>Experience</span><span>Skills</span><span>Messages</span></div></div></div>
+          <div className="analytics-chart"><div className="analytics-chart-y"><span>04</span><span>03</span><span>02</span><span>01</span><span>00</span></div><div className="analytics-chart-area"><div className="analytics-grid-lines"><i /><i /><i /><i /></div><TrendLine /><div className="analytics-chart-x"><span>Projects</span><span>Experience</span><span>Knowledge</span><span>Messages</span></div></div></div>
         </section>
         <section className="analytics-panel analytics-status-panel">
           <div className="analytics-panel-heading"><div><span className="analytics-panel-kicker">SYSTEM STATUS</span><h3>Publishing health</h3></div><ShieldCheck size={16} /></div>

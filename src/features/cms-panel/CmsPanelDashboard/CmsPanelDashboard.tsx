@@ -30,7 +30,7 @@ import type { InboxSummary } from "@/features/cms-panel/MessageInbox/MessageInbo
 import { ExperienceSection } from "@/features/cms-panel/sections/portfolio/experience/ExperienceSection";
 import { EducationSection } from "@/features/cms-panel/sections/portfolio/education/EducationSection";
 import { AboutSection } from "@/features/cms-panel/sections/portfolio/about/AboutSection";
-import { SkillsSection } from "@/features/cms-panel/sections/portfolio/skills/SkillsSection";
+import { KnowledgeSection } from "@/features/cms-panel/sections/portfolio/knowledge/KnowledgeSection";
 import { ProjectsSection } from "@/features/cms-panel/sections/portfolio/projects/ProjectsSection";
 import { ResumeSection } from "@/features/cms-panel/sections/portfolio/resume/ResumeSection";
 import { MessagesSection } from "@/features/cms-panel/sections/messages/MessagesSection";
@@ -50,7 +50,7 @@ export type CmsPanelSection =
   | "overview"
   | "hero"
   | "about"
-  | "skills"
+  | "knowledge"
   | "projects"
   | "experience"
   | "education"
@@ -102,7 +102,7 @@ const portfolioGroup: NavGroup = {
   icon: PenLine,
   items: [
     { id: "about", label: "About", icon: UserRound },
-    { id: "skills", label: "Skills", icon: BookOpen },
+    { id: "knowledge", label: "Knowledge", icon: BookOpen },
     { id: "projects", label: "Projects", icon: FolderKanban },
     { id: "experience", label: "Experience", icon: BriefcaseBusiness },
     { id: "education", label: "Education", icon: GraduationCap },
@@ -136,7 +136,7 @@ const sectionLabels: Record<CmsPanelSection, string> = {
   overview: "Overview",
   hero: "Hero",
   about: "About",
-  skills: "Skills",
+  knowledge: "Knowledge",
   projects: "Projects",
   experience: "Experience",
   education: "Education",
@@ -152,7 +152,7 @@ const sectionLabels: Record<CmsPanelSection, string> = {
   "site-settings": "Site Settings"
 };
 
-const portfolioSections: CmsPanelSection[] = ["hero", "about", "skills", "projects", "experience", "education", "resume", "profile", "social-links", "seo", "site-settings"];
+const portfolioSections: CmsPanelSection[] = ["hero", "about", "knowledge", "projects", "experience", "education", "resume", "profile", "social-links", "seo", "site-settings"];
 
 function SidebarLink({ link, active, badge, onClick }: { link: NavLink; active: boolean; badge?: number; onClick: () => void }) {
   const Icon = link.icon;
@@ -235,7 +235,7 @@ function SectionPanel({ section, content, inboxSummary, onNavigate, onContentCha
   switch (section) {
     case "overview": return <OverviewSection content={content} inboxSummary={inboxSummary} onNavigate={onNavigate} />;
     case "about": return <AboutSection content={content} onChange={onContentChange} />;
-    case "skills": return <SkillsSection content={content} onChange={onContentChange} />;
+    case "knowledge": return <KnowledgeSection content={content} onChange={onContentChange} />;
     case "projects": return <ProjectsSection content={content} onChange={onContentChange} />;
     case "experience": return <ExperienceSection content={content} onChange={onContentChange} />;
     case "education": return <EducationSection content={content} onChange={onContentChange} />;

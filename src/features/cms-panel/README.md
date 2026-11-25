@@ -16,7 +16,7 @@ CmsPanel dashboard for managing portfolio content. All client-side (talks to API
 | Directory | Description |
 |-----------|-------------|
 | `sections/overview/` | KPI cards, activity chart, quick actions |
-| `sections/portfolio/` | Content editors (about, skills, education, projects, experience, resume) |
+| `sections/portfolio/` | Content editors (about, knowledge, education, projects, experience, resume) |
 | `sections/settings/` | CmsPanel account, password, 2FA, security status, SEO, site settings |
 | `sections/messages/` | Message inbox wrapper |
 | `sections/profile/` | Public email + location editor |

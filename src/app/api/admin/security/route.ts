@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAdminSession, sessionOptions } from "@/lib/auth";
+import { getAdminSession, isSessionSecretStrong, sessionOptions } from "@/lib/auth";
 import { hasAdminAccess } from "@/lib/permissions";
 import { getRateLimitSnapshot } from "@/lib/auth-rate-limit";
 import { getContactEmailConfigurationStatus } from "@/lib/contact-email";
@@ -81,7 +81,7 @@ export async function GET() {
 
   const rounds = admin ? readBcryptRounds(admin.accessCodeHash) : null;
   const secret = process.env.SESSION_SECRET?.trim() ?? "";
-  const secretLooksWeak = secret.length < 32 || secret.includes("replace") || secret.includes("changeme");
+  const secretLooksWeak = !isSessionSecretStrong(secret);
   const cookieOptions = sessionOptions.cookieOptions ?? {};
   const emailConfiguration = getContactEmailConfigurationStatus();
   const appliedHeaderKeys = new Set(securityHeaders.map((header) => header.key));
@@ -184,7 +184,7 @@ export async function GET() {
       label: "Brute-force throttling",
       status: rateLimits ? "pass" : "warn",
       detail: rateLimits
-        ? `${rateLimits.loginMaxAttempts} attempts per ${rateLimits.windowMinutes} min per address, plus a shared ceiling of ${rateLimits.globalMaxAttempts}. ${rateLimits.trackedAddresses} addresses tracked, ${rateLimits.throttledAddresses} currently locked out, ${rateLimits.recordedFailures} failures recorded.`
+        ? `${rateLimits.loginMaxAttempts} login attempts per ${rateLimits.windowMinutes} min per address, plus shared login/contact ceilings. ${rateLimits.trackedAddresses} address buckets tracked (login and contact), ${rateLimits.throttledAddresses} currently locked out, ${rateLimits.recordedFailures} attempts recorded. Shared global buckets are excluded.`
         : "Rate-limit state could not be read from the database."
     },
     {

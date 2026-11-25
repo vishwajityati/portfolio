@@ -1,13 +1,13 @@
 import type { Education } from "./education";
 import type { Experience } from "./experience";
 import type { Project } from "./project";
-import type { Skills } from "./skills";
+import type { KnowledgeSet } from "./knowledge";
 
 
-export type { Education , SkillGroup } from "./education";
+export type { Education , KnowledgeGroup } from "./education";
 export type { Experience } from "./experience";
 export type { Project } from "./project";
-export type { Skills } from "./skills";
+export type { KnowledgeSet } from "./knowledge";
 
 export interface Contact {
   email: string;
@@ -39,7 +39,7 @@ export interface PortfolioContent {
   photoUrl: string;
   resumeUrl: string;
   education: Education[];
-  skills: Skills;   
+  knowledge: KnowledgeSet;
   projects: Project[];
   experience: Experience[];
   contact: Contact;
@@ -58,7 +58,7 @@ export const emptyPortfolio: PortfolioContent = {
 
   education: [],
 
-  skills: {
+  knowledge: {
     frontend: [],
     backend: [],
     programmingLanguages: [],

@@ -1,8 +1,8 @@
-import { handleUpload } from "@vercel/blob/client";
+import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/auth";
 import { hasAdminAccess } from "@/lib/permissions";
-import { hasSameOrigin } from "@/lib/security";
+import { exceedsDeclaredSize, exceedsSerializedSize, hasSameOrigin, UPLOAD_TOKEN_BODY_MAX_BYTES } from "@/lib/security";
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,9 +20,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (exceedsDeclaredSize(request, UPLOAD_TOKEN_BODY_MAX_BYTES)) {
+      return NextResponse.json(
+        { success: false, message: "Request is too large." },
+        { status: 413 },
+      );
+    }
+
     const session = await getAdminSession();
 
-    const body = await request.json();
+    const parsedBody: unknown = await request.json();
+    if (exceedsSerializedSize(parsedBody, UPLOAD_TOKEN_BODY_MAX_BYTES)) {
+      return NextResponse.json(
+        { success: false, message: "Request is too large." },
+        { status: 413 },
+      );
+    }
+
+    // The SDK performs full schema validation; the cast only satisfies the
+    // generic JSON type after our own size guards.
+    const body = parsedBody as HandleUploadBody;
 
     const response = await handleUpload({
       body,

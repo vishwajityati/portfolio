@@ -921,7 +921,7 @@
 .admin-dashboard-layout .analytics-kpi,
 .admin-dashboard-layout .content-entry-card,
 .admin-dashboard-layout .admin-settings-section,
-.admin-dashboard-layout .skills-admin-card {
+.admin-dashboard-layout .knowledge-admin-card {
   min-width: 0;
   overflow-wrap: anywhere;
 }
@@ -1047,7 +1047,7 @@
   .analytics-main-grid,
   .analytics-bottom-grid,
   .admin-shortcut-grid,
-  .skills-admin-grid {
+  .knowledge-admin-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -1089,7 +1089,7 @@
   }
 
   .content-entry-card,
-  .skills-admin-card,
+  .knowledge-admin-card,
   .resume-upload-card,
   .inbox-panel {
     padding: 14px;
@@ -1110,16 +1110,16 @@
     max-width: 100%;
   }
 
-  .skills-admin-card-header {
+  .knowledge-admin-card-header {
     grid-template-columns: 34px minmax(0, 1fr);
   }
 
-  .skills-admin-card-header .content-add-button {
+  .knowledge-admin-card-header .content-add-button {
     grid-column: 1 / -1;
     width: fit-content;
   }
 
-  .skills-admin-row {
+  .knowledge-admin-row {
     grid-template-columns: 20px minmax(0, 1fr) 70px 34px;
   }
 
@@ -1194,23 +1194,23 @@
     white-space: nowrap;
   }
 
-  .skills-admin-row {
+  .knowledge-admin-row {
     grid-template-columns: minmax(0, 1fr) 68px 34px;
   }
 
-  .skills-admin-skill-number {
+  .knowledge-admin-knowledge-number {
     display: none;
   }
 
-  .skills-admin-name {
+  .knowledge-admin-name {
     grid-column: 1;
   }
 
-  .skills-admin-level {
+  .knowledge-admin-level {
     grid-column: 2;
   }
 
-  .skills-admin-delete {
+  .knowledge-admin-delete {
     grid-column: 3;
   }
 
@@ -1238,7 +1238,7 @@
   }
 
   .content-entry-card,
-  .skills-admin-card,
+  .knowledge-admin-card,
   .inbox-panel {
     padding: 11px;
   }

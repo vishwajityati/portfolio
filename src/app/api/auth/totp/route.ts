@@ -3,7 +3,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/auth";
 import { checkLoginRateLimit, recordFailedLogin } from "@/lib/auth-rate-limit";
 import { hasAdminAccess } from "@/lib/permissions";
-import { getClientAddress, hasSameOrigin } from "@/lib/security";
+import {
+  AUTH_BODY_MAX_BYTES,
+  exceedsDeclaredSize,
+  exceedsSerializedSize,
+  getClientAddress,
+  hasSameOrigin
+} from "@/lib/security";
 import { normalizeAccessCode } from "@/lib/access-code";
 import { decryptTotpSecret, encryptTotpSecret, createTotpSecret, createTotpUri, verifyTotpCode } from "@/lib/totp";
 import { prisma } from "@/lib/prisma";
@@ -33,7 +39,14 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    if (exceedsDeclaredSize(request, AUTH_BODY_MAX_BYTES)) {
+      return NextResponse.json({ error: "Request is too large." }, { status: 413 });
+    }
+
     const body: unknown = await request.json();
+    if (exceedsSerializedSize(body, AUTH_BODY_MAX_BYTES)) {
+      return NextResponse.json({ error: "Request is too large." }, { status: 413 });
+    }
     if (!isRecord(body) || typeof body.action !== "string") {
       return NextResponse.json({ error: "Choose an authenticator action." }, { status: 400 });
     }

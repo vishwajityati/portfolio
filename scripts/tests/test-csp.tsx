@@ -13,7 +13,7 @@ import fs from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { About } from "../../src/features/portfolio/about/About";
 import { ProjectCard } from "../../src/features/portfolio/projects/ProjectCard";
-import { Skills } from "../../src/features/portfolio/skills/Skills";
+import { Knowledge } from "../../src/features/portfolio/knowledge/Knowledge";
 import { navigationItems } from "../../src/data/navigation";
 import { normalizePortfolioContent } from "../../src/lib/validations";
 import { contentSecurityPolicyIsStrict, buildContentSecurityPolicy } from "../../src/lib/security-headers";
@@ -87,53 +87,65 @@ async function main() {
   assert.equal(emptyHtml.includes("portrait-placeholder"), true, "the placeholder must still render without a photo");
   record("PASS About still renders the initials placeholder when photoUrl is empty");
 
-  // --- Skills section ------------------------------------------------------
-  // The dashboard has a dedicated Skills panel, so the public site must render them as their
+  // --- Knowledge section ------------------------------------------------------
+  // The dashboard has a dedicated Knowledge panel, so the public site must render them as their
   // own section rather than only as tags inside the education card.
-  const skillNames = ["Java", "Data Structures & Algorithms", "SQL", "React", "Next.js"];
-  const skillGroups = [{ title: "Backend", skills: skillNames.map((name) => ({ name, level: 80 })) }];
-  const withSkills: PortfolioContent = { ...populated, education: [{ ...populated.education[0], skillGroups }] };
-  const skillsHtml = renderToStaticMarkup(<Skills content={withSkills} />);
-  assertNoInlineStyle(skillsHtml, "Skills");
-  assert.equal(skillsHtml.includes('id="skills"'), true, "the section must expose id=skills for the nav anchor");
-  for (const skill of skillNames) {
+  const knowledgeNames = ["Java", "Data Structures & Algorithms", "SQL", "React", "Next.js"];
+  const knowledgeGroups = [{ title: "Backend", knowledge: knowledgeNames.map((name) => ({ name, level: 80 })) }];
+  const withKnowledge: PortfolioContent = { ...populated, education: [{ ...populated.education[0], knowledgeGroups }] };
+  const knowledgeHtml = renderToStaticMarkup(<Knowledge content={withKnowledge} />);
+  assertNoInlineStyle(knowledgeHtml, "Knowledge");
+  assert.equal(knowledgeHtml.includes('id="knowledge"'), true, "the section must expose id=knowledge for the nav anchor");
+  for (const knowledge of knowledgeNames) {
     // React escapes the markup-significant characters in text, so "Data Structures & Algorithms"
     // is emitted as "&amp;". Compare against the escaped form, which also proves the value was
     // escaped rather than injected raw.
-    const escaped = skill.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    assert.equal(skillsHtml.includes(escaped), true, `missing skill: ${skill}`);
+    const escaped = knowledge.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    assert.equal(knowledgeHtml.includes(escaped), true, `missing knowledge: ${knowledge}`);
   }
-  record("PASS Skills renders every skill in its own anchorable section with no inline style");
+  record("PASS Knowledge renders every entry in its own anchorable section with no inline style");
 
   // Navigation must know about the section, otherwise the nav link cannot scroll to it.
-  assert.equal(navigationItems.some(({ id }) => id === "skills"), true, "navigation must include the skills section");
-  record("PASS navigation includes the skills section");
+  assert.equal(navigationItems.some(({ id }) => id === "knowledge"), true, "navigation must include the knowledge section");
+  record("PASS navigation includes the knowledge section");
 
-  // An empty skill list must degrade gracefully rather than render an empty grid.
-  const emptySkillsHtml = renderToStaticMarkup(<Skills content={{ ...populated, education: [{ ...populated.education[0], skillGroups: [] }] }} />);
-  assertNoInlineStyle(emptySkillsHtml, "Skills (empty)");
-  assert.equal(emptySkillsHtml.includes("empty-state"), true, "an empty skill list must show the empty state");
-  record("PASS Skills shows an empty state when no skills are configured");
+  // An empty knowledge list must degrade gracefully rather than render an empty grid.
+  const emptyKnowledgeHtml = renderToStaticMarkup(<Knowledge content={{ ...populated, education: [{ ...populated.education[0], knowledgeGroups: [] }] }} />);
+  assertNoInlineStyle(emptyKnowledgeHtml, "Knowledge (empty)");
+  assert.equal(emptyKnowledgeHtml.includes("empty-state"), true, "an empty knowledge list must show the empty state");
+  record("PASS Knowledge shows an empty state when no knowledge is configured");
 
   // Proficiency indicators use fixed classes, never inline widths, because the production
   // policy sets style-src-attr 'none'. Values outside the normal range still render safely.
-  const steppedHtml = renderToStaticMarkup(<Skills content={{ ...populated, education: [{ ...populated.education[0], skillGroups: [{ title: "Frontend", skills: [{ name: "React", level: 87 }, { name: "CSS", level: -20 }, { name: "Go", level: 1000 }] }] }] }} />);
-  const activeDots = steppedHtml.match(/skill-dot active/g) ?? [];
+  const steppedHtml = renderToStaticMarkup(<Knowledge content={{ ...populated, education: [{ ...populated.education[0], knowledgeGroups: [{ title: "Frontend", knowledge: [{ name: "React", level: 87 }, { name: "CSS", level: -20 }, { name: "Go", level: 1000 }] }] }] }} />);
+  const activeDots = steppedHtml.match(/knowledge-dot active/g) ?? [];
   assert.equal(activeDots.length, 7, "levels must map to the fixed 3/1/3 active-dot indicators");
   assert.equal(steppedHtml.includes("style="), false, "proficiency indicators must not use inline styles");
   record("PASS proficiency indicators use fixed dot classes with no inline styles");
 
-  // The stored record predates the grouped shape. It must migrate to the owner's own skills
-  // rather than failing validation and silently falling back to the seed content.
+  // The stored record predates the rename and the grouped shape: its education entry still has
+  // the old flat `skills` key. It must migrate to the owner's own knowledge rather than failing
+  // validation and silently falling back to the seed content.
   const legacy = normalizePortfolioContent(
     { ...populated, education: [{ degree: "BCA", institution: "CSM", period: "2025", summary: "s", beyond: "b", skills: ["Java", "React"] }] },
     populated
   );
-  assert.notEqual(legacy, null, "a record written before the grouped skills must still normalize");
-  const legacyGroups = (legacy as PortfolioContent).education[0].skillGroups;
-  assert.equal(legacyGroups.length, 1, "legacy skills collapse into one group");
-  assert.deepEqual(legacyGroups[0].skills.map((skill) => skill.name), ["Java", "React"], "legacy skill names must be preserved");
-  record("PASS a record stored with the old flat skills list migrates instead of falling back to defaults");
+  assert.notEqual(legacy, null, "a record written before the grouped knowledge must still normalize");
+  const legacyGroups = (legacy as PortfolioContent).education[0].knowledgeGroups;
+  assert.equal(legacyGroups.length, 1, "legacy knowledge collapses into one group");
+  assert.deepEqual(legacyGroups[0].knowledge.map((knowledge) => knowledge.name), ["Java", "React"], "legacy knowledge names must be preserved");
+  record("PASS a record stored with the old flat list migrates instead of falling back to defaults");
+
+  // Records written just before the rename already had groups, but both the outer and inner keys
+  // were still `skillGroups` / `skills`. Both must migrate or validation rejects the whole record.
+  const legacyGrouped = normalizePortfolioContent(
+    { ...populated, education: [{ degree: "BCA", institution: "CSM", period: "2025", summary: "s", beyond: "b", skillGroups: [{ title: "Backend", skills: [{ name: "Java", level: 70 }] }] }] },
+    populated
+  );
+  assert.notEqual(legacyGrouped, null, "a record with pre-rename grouped keys must still normalize");
+  const renamedGroups = (legacyGrouped as PortfolioContent).education[0].knowledgeGroups;
+  assert.deepEqual(renamedGroups[0].knowledge.map((knowledge) => knowledge.name), ["Java"], "pre-rename group entries must be preserved");
+  record("PASS a record stored with pre-rename grouped keys migrates instead of falling back to defaults");
 
   // --- Source-level guard --------------------------------------------------
   // Catches any future `style={{...}}` in JSX regardless of whether it is reachable

@@ -10,6 +10,13 @@ const nextConfig: NextConfig = {
   agentRules: false,
   poweredByHeader: false,
 
+  // The app does not use next/image. Disabling the optimizer removes the
+  // /_next/image attack surface entirely (including SVG-processing CVEs).
+  images: {
+    unoptimized: true,
+    dangerouslyAllowSVG: false
+  },
+
   allowedDevOrigins: [
     "*.trycloudflare.com",
   ],

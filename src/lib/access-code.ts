@@ -11,7 +11,12 @@
  */
 
 export const MIN_ACCESS_CODE_LENGTH = 20;
-export const MAX_ACCESS_CODE_LENGTH = 200;
+/** bcrypt only uses the first 72 bytes, so longer codes add no security. */
+export const MAX_ACCESS_CODE_LENGTH = 72;
+
+export function accessCodeByteLength(code: string): number {
+  return new TextEncoder().encode(code).length;
+}
 
 /** Rejected outright: obvious, sequential or dictionary-trivial values. */
 const WEAK_CODES = new Set([
@@ -75,8 +80,8 @@ export function evaluateAccessCode(code: string): AccessCodeCheck[] {
 
 /** Returns a human-readable rejection reason, or null when the code is acceptable. */
 export function getAccessCodePolicyError(code: string): string | null {
-  if (code.length > MAX_ACCESS_CODE_LENGTH) {
-    return `Access code must be at most ${MAX_ACCESS_CODE_LENGTH} characters.`;
+  if (code.length > MAX_ACCESS_CODE_LENGTH || accessCodeByteLength(code) > MAX_ACCESS_CODE_LENGTH) {
+    return `Access code must be at most ${MAX_ACCESS_CODE_LENGTH} characters (${MAX_ACCESS_CODE_LENGTH} bytes).`;
   }
   const failed = evaluateAccessCode(code).find((check) => !check.passed);
   if (!failed) return null;

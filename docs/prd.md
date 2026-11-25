@@ -20,7 +20,7 @@ A single-developer portfolio that is:
 
 | User | Need | Entry point |
 | --- | --- | --- |
-| Visitor | Skim skills, projects and experience; get in touch | `/` |
+| Visitor | Skim knowledge, projects and experience; get in touch | `/` |
 | Recruiter / client | Read a focused, printable summary | `/resume` |
 | Owner | Edit all site content; read contact messages | `/bosdik` |
 
@@ -31,7 +31,7 @@ registration — the app is a publishing surface plus a private editor, not a co
 
 ### In scope
 
-- Single-page public site: hero, about, skills, education, projects, experience, contact.
+- Single-page public site: hero, about, knowledge, education, projects, experience, contact.
 - Résumé view with print styling.
 - Admin dashboard with per-section editing of all portfolio content.
 - Contact form that stores messages and sends an email alert.

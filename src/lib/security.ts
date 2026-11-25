@@ -5,6 +5,10 @@ import type { NextRequest } from "next/server";
 /** Bucket used when the true client address cannot be established. */
 const UNKNOWN_ADDRESS = "unresolved";
 
+/** Request body caps for unauthenticated/sensitive endpoints. */
+export const AUTH_BODY_MAX_BYTES = 16_000;
+export const UPLOAD_TOKEN_BODY_MAX_BYTES = 32_000;
+
 /**
  * Forwarding headers are only trustworthy when a proxy overwrites them. When the app
  * is exposed directly an attacker can rotate `X-Forwarded-For` to get a fresh
@@ -104,12 +108,21 @@ export function hasSameOrigin(request: NextRequest): boolean {
     }
   }
 
-  const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+  const trustsProxy = trustsProxyHeaders();
+  const requestUrl = new URL(request.url);
+  const forwardedHost = trustsProxy
+    ? request.headers.get("x-forwarded-host")?.split(",")[0]?.trim()
+    : null;
+  const host = forwardedHost ?? request.headers.get("host") ?? requestUrl.host;
   if (!origin || !host) return false;
   try {
-    const forwardedProtocol = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim();
-    const protocol = forwardedProtocol ? `${forwardedProtocol}:` : new URL(request.url).protocol;
-    return new URL(origin).origin === `${protocol}//${host}`;
+    const forwardedProtocol = trustsProxy
+      ? request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim()
+      : null;
+    const scheme = forwardedProtocol ?? requestUrl.protocol.replace(/:$/, "");
+    // Never derive an origin from an arbitrary scheme supplied in a header.
+    if (scheme !== "http" && scheme !== "https") return false;
+    return new URL(origin).origin === `${scheme}://${host}`;
   } catch {
     return false;
   }

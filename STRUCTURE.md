@@ -31,7 +31,7 @@ portfolio/
 │   │   │   ├── PortfolioApp.tsx #   Main composer
 │   │   │   ├── hero/            #   Hero + 3D orb
 │   │   │   ├── about/           #   About section
-│   │   │   ├── skills/          #   Skills cards
+│   │   │   ├── knowledge/          #   Knowledge cards
 │   │   │   ├── education/       #   Education timeline
 │   │   │   ├── projects/        #   Projects grid
 │   │   │   ├── experience/      #   Experience timeline
@@ -76,7 +76,7 @@ portfolio/
 │   ├── types/                  # TypeScript types
 │   │   ├── index.ts            #   Barrel export + main types
 │   │   ├── project.ts          #   Project type
-│   │   ├── skills.ts           #   Skill types
+│   │   ├── knowledge.ts           #   Knowledge types
 │   │   ├── experience.ts       #   Experience type
 │   │   └── education.ts        #   Education type
 │   ├── data/                   # Static seed data

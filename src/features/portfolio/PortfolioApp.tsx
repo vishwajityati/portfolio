@@ -8,10 +8,9 @@ import { Experience } from "./experience/Experience";
 import { Hero } from "./hero/Hero";
 import { BottomNav } from "./navigation/BottomNav";
 import { Projects } from "./projects/Projects";
-import { Skills } from "./skills/Skills";
+import { Knowledge } from "./knowledge/Knowledge";
 import { useActiveSection } from "@/hooks/useActiveSection";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import  { AnimatedBackground }  from "@/features/portfolio/background/AnimatedBackground";
 
 export function PortfolioApp({ content }: { content: PortfolioContent }) {
   useScrollAnimation();
@@ -19,11 +18,10 @@ export function PortfolioApp({ content }: { content: PortfolioContent }) {
 
   return (
     <div className="portfolio">
-      <AnimatedBackground />
       <main>
         <Hero content={content} />
         <About content={content} />
-        <Skills content={content} />
+        <Knowledge content={content} />
         <Education content={content} />
         <Projects content={content} />
         <Experience content={content} />

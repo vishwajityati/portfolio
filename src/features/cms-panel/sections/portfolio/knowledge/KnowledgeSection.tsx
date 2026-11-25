@@ -9,21 +9,21 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 import type { PortfolioContent } from "@/types";
-import { snapSkillLevel } from "@/lib/validations";
+import { snapKnowledgeLevel } from "@/lib/validations";
 import { SectionIntro } from "@/features/cms-panel/sections/shared/SectionIntro";
 
-import "./SkillsSection.css";
+import "./KnowledgeSection.css";
 
-type SkillCategory = {
+type KnowledgeCategory = {
   key: string;
   title: string;
   description: string;
   icon: ReactNode;
 };
-type SkillGroup =
-  PortfolioContent["education"][number]["skillGroups"][number];
+type KnowledgeGroup =
+  PortfolioContent["education"][number]["knowledgeGroups"][number];
 
-const SKILL_CATEGORIES: SkillCategory[] = [
+const KNOWLEDGE_CATEGORIES: KnowledgeCategory[] = [
   {
     key: "frontend",
     title: "Frontend",
@@ -59,10 +59,10 @@ function normalizeTitle(title: string) {
 }
 
 function findExistingGroup(
-  groups: SkillGroup[],
-  category: SkillCategory,
+  groups: KnowledgeGroup[],
+  category: KnowledgeCategory,
   index: number,
-): SkillGroup {
+): KnowledgeGroup {
   const normalizedCategory = normalizeTitle(category.title);
 
   const exactMatch = groups.find((group) => {
@@ -129,42 +129,42 @@ function findExistingGroup(
 
   return {
     title: category.title,
-    skills: [],
+    knowledge: [],
   };
 }
 
-export function SkillsSection({
+export function KnowledgeSection({
   content,
   onChange,
 }: {
   content: PortfolioContent;
   onChange: (content: PortfolioContent) => void;
 }) {
-  const education = content.education[0] ?? { degree: "", institution: "", period: "", summary: "", skillGroups: [], beyond: "" };
-  const existingGroups = education.skillGroups;
+  const education = content.education[0] ?? { degree: "", institution: "", period: "", summary: "", knowledgeGroups: [], beyond: "" };
+  const existingGroups = education.knowledgeGroups;
 
   /*
    * Always expose exactly four categories in the Admin dashboard.
    *
-   * The stored data still uses education.skillGroups, so this change
+   * The stored data still uses education.knowledgeGroups, so this change
    * does not require a database migration.
    */
-  const groups = SKILL_CATEGORIES.map((category, index) =>
+  const groups = KNOWLEDGE_CATEGORIES.map((category, index) =>
     findExistingGroup(existingGroups, category, index),
   );
 
-  const updateGroups = (next: SkillGroup[]) => {
+  const updateGroups = (next: KnowledgeGroup[]) => {
     onChange({
       ...content,
       education: content.education.length > 0
-        ? [{ ...education, skillGroups: next }, ...content.education.slice(1)]
-        : [{ ...education, skillGroups: next }],
+        ? [{ ...education, knowledgeGroups: next }, ...content.education.slice(1)]
+        : [{ ...education, knowledgeGroups: next }],
     });
   };
 
   const updateGroup = (
     groupIndex: number,
-    patch: Partial<SkillGroup>,
+    patch: Partial<KnowledgeGroup>,
   ) => {
     const nextGroups = groups.map((group, index) =>
       index === groupIndex
@@ -172,7 +172,7 @@ export function SkillsSection({
             ...group,
             ...patch,
             // Category names are controlled by the system.
-            title: SKILL_CATEGORIES[index].title,
+            title: KNOWLEDGE_CATEGORIES[index].title,
           }
         : group,
     );
@@ -180,10 +180,10 @@ export function SkillsSection({
     updateGroups(nextGroups);
   };
 
-  const updateSkill = (
+  const updateKnowledge = (
     groupIndex: number,
-    skillIndex: number,
-    patch: Partial<SkillGroup["skills"][number]>,
+    knowledgeIndex: number,
+    patch: Partial<KnowledgeGroup["knowledge"][number]>,
   ) => {
     const nextGroups = groups.map((group, index) => {
       if (index !== groupIndex) {
@@ -192,14 +192,14 @@ export function SkillsSection({
 
       return {
         ...group,
-        title: SKILL_CATEGORIES[index].title,
-        skills: group.skills.map((skill, position) =>
-          position === skillIndex
+        title: KNOWLEDGE_CATEGORIES[index].title,
+        knowledge: group.knowledge.map((knowledge, position) =>
+          position === knowledgeIndex
             ? {
-                ...skill,
+                ...knowledge,
                 ...patch,
               }
-            : skill,
+            : knowledge,
         ),
       };
     });
@@ -207,7 +207,7 @@ export function SkillsSection({
     updateGroups(nextGroups);
   };
 
-  const addSkill = (groupIndex: number) => {
+  const addKnowledge = (groupIndex: number) => {
     const nextGroups = groups.map((group, index) => {
       if (index !== groupIndex) {
         return group;
@@ -215,11 +215,11 @@ export function SkillsSection({
 
       return {
         ...group,
-        title: SKILL_CATEGORIES[index].title,
-        skills: [
-          ...group.skills,
+        title: KNOWLEDGE_CATEGORIES[index].title,
+        knowledge: [
+          ...group.knowledge,
           {
-            name: "New skill",
+            name: "New knowledge",
             level: 75,
           },
         ],
@@ -229,9 +229,9 @@ export function SkillsSection({
     updateGroups(nextGroups);
   };
 
-  const removeSkill = (
+  const removeKnowledge = (
     groupIndex: number,
-    skillIndex: number,
+    knowledgeIndex: number,
   ) => {
     const nextGroups = groups.map((group, index) => {
       if (index !== groupIndex) {
@@ -240,9 +240,9 @@ export function SkillsSection({
 
       return {
         ...group,
-        title: SKILL_CATEGORIES[index].title,
-        skills: group.skills.filter(
-          (_, position) => position !== skillIndex,
+        title: KNOWLEDGE_CATEGORIES[index].title,
+        knowledge: group.knowledge.filter(
+          (_, position) => position !== knowledgeIndex,
         ),
       };
     });
@@ -253,23 +253,23 @@ export function SkillsSection({
   return (
     <>
       
-        <div className="skills-admin-grid">
-        {SKILL_CATEGORIES.map((category, groupIndex) => {
+        <div className="knowledge-admin-grid">
+        {KNOWLEDGE_CATEGORIES.map((category, groupIndex) => {
           const group = groups[groupIndex];
 
           return (
             <section
-              className="skills-admin-card"
+              className="knowledge-admin-card"
               key={category.key}
             >
               {/* Category header */}
-              <div className="skills-admin-card-header">
-                <div className="skills-admin-card-icon">
+              <div className="knowledge-admin-card-header">
+                <div className="knowledge-admin-card-icon">
                   {category.icon}
                 </div>
 
-                <div className="skills-admin-card-title">
-                  <span className="skills-admin-number">
+                <div className="knowledge-admin-card-title">
+                  <span className="knowledge-admin-number">
                     {String(groupIndex + 1).padStart(2, "0")}
                   </span>
 
@@ -281,43 +281,43 @@ export function SkillsSection({
                 <button
                   className="button button-quiet content-add-button"
                   type="button"
-                  onClick={() => addSkill(groupIndex)}
+                  onClick={() => addKnowledge(groupIndex)}
                 >
                   <Plus size={14} />
-                  Add skill
+                  Add knowledge
                 </button>
               </div>
 
               {/* Divider */}
-              <div className="skills-admin-divider" />
+              <div className="knowledge-admin-divider" />
 
-              {/* Skills */}
-              {group.skills.length === 0 ? (
-                <div className="skills-admin-empty">
+              {/* Knowledge */}
+              {group.knowledge.length === 0 ? (
+                <div className="knowledge-admin-empty">
                   <Wrench size={15} />
-                  <span>No skills added yet.</span>
+                  <span>No knowledge added yet.</span>
                 </div>
               ) : (
-                <div className="skills-admin-list">
-                  {group.skills.map((skill, skillIndex) => (
+                <div className="knowledge-admin-list">
+                  {group.knowledge.map((knowledge, knowledgeIndex) => (
                     <div
-                      className="skills-admin-row"
-                      key={`${category.key}-${skillIndex}`}
+                      className="knowledge-admin-row"
+                      key={`${category.key}-${knowledgeIndex}`}
                     >
-                      <div className="skills-admin-skill-number">
-                        {String(skillIndex + 1).padStart(2, "0")}
+                      <div className="knowledge-admin-knowledge-number">
+                        {String(knowledgeIndex + 1).padStart(2, "0")}
                       </div>
 
-                      <div className="skills-admin-name">
+                      <div className="knowledge-admin-name">
                         <label
-                          htmlFor={`skill-${groupIndex}-${skillIndex}`}
+                          htmlFor={`knowledge-${groupIndex}-${knowledgeIndex}`}
                         >
-                          Skill
+                          Knowledge
                         </label>
 
                         <input
-                          id={`skill-${groupIndex}-${skillIndex}`}
-                          value={skill.name}
+                          id={`knowledge-${groupIndex}-${knowledgeIndex}`}
+                          value={knowledge.name}
                           placeholder={
                             category.key === "frontend"
                               ? "React"
@@ -328,9 +328,9 @@ export function SkillsSection({
                                   : "PostgreSQL"
                           }
                           onChange={(event) =>
-                            updateSkill(
+                            updateKnowledge(
                               groupIndex,
-                              skillIndex,
+                              knowledgeIndex,
                               {
                                 name: event.target.value,
                               },
@@ -339,27 +339,27 @@ export function SkillsSection({
                         />
                       </div>
 
-                      <div className="skills-admin-level">
+                      <div className="knowledge-admin-level">
                         <label
-                          htmlFor={`level-${groupIndex}-${skillIndex}`}
+                          htmlFor={`level-${groupIndex}-${knowledgeIndex}`}
                         >
                           Level
                         </label>
 
-                        <div className="skills-admin-level-input">
+                        <div className="knowledge-admin-level-input">
                           <input
-                            id={`level-${groupIndex}-${skillIndex}`}
+                            id={`level-${groupIndex}-${knowledgeIndex}`}
                             type="number"
                             min={0}
                             max={100}
                             step={5}
-                            value={skill.level}
+                            value={knowledge.level}
                             onChange={(event) =>
-                              updateSkill(
+                              updateKnowledge(
                                 groupIndex,
-                                skillIndex,
+                                knowledgeIndex,
                                 {
-                                  level: snapSkillLevel(
+                                  level: snapKnowledgeLevel(
                                     event.target.value,
                                   ),
                                 },
@@ -372,15 +372,15 @@ export function SkillsSection({
                       </div>
 
                       <button
-                        className="content-icon-button skills-admin-delete"
+                        className="content-icon-button knowledge-admin-delete"
                         type="button"
                         aria-label={`Remove ${
-                          skill.name || "skill"
+                          knowledge.name || "knowledge"
                         }`}
                         onClick={() =>
-                          removeSkill(
+                          removeKnowledge(
                             groupIndex,
-                            skillIndex,
+                            knowledgeIndex,
                           )
                         }
                       >

@@ -9,7 +9,7 @@ export const defaultContent: PortfolioContent = {
   roles: ["Full-stack developer", "Curious problem solver", "Always building"],
   location: "Mumbai, India",
   about: [
-    "I’m a passionate software developer focused on building modern, responsive, and user-friendly web applications. I enjoy turning ideas into real-world products and continuously improving my skills by learning, experimenting, and building projects.",
+    "I’m a passionate software developer focused on building modern, responsive, and user-friendly web applications. I enjoy turning ideas into real-world products and continuously improving my knowledge by learning, experimenting, and building projects.",
     "My current focus is on full-stack web development, with technologies such as JavaScript, React, Next.js, Node.js, and databases. I’m also strengthening my foundation in Java, Data Structures & Algorithms, and software development principles.",
     "I believe the best way to learn technology is by building. Every project I work on gives me an opportunity to solve problems, explore new technologies, and write better code.",
     "I’m currently working toward becoming a strong full-stack developer, while exploring areas such as AI, automation, and modern software architecture.",
@@ -18,7 +18,7 @@ export const defaultContent: PortfolioContent = {
   photoUrl: "",
   resumeUrl: "",
   education,
- skills: {
+ knowledge: {
     frontend: [],
     backend: [],
     programmingLanguages: [],

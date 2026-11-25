@@ -22,7 +22,7 @@ A full-stack portfolio built with Next.js App Router, TypeScript, Prisma, and Ne
    neon env pull
    ```
 
-   `DATABASE_URL` is the pooled app connection; `DATABASE_URL_UNPOOLED` is used for migrations. Set `SESSION_SECRET` to a random value with at least 32 characters. Keep all secrets private.
+   `DATABASE_URL` is the pooled app connection; `DATABASE_URL_UNPOOLED` is used for migrations. Set `SESSION_SECRET` to a random value with at least 32 characters. For a fresh database, also generate `ADMIN_SETUP_TOKEN` (32+ random characters) — first-time admin creation is refused without it. Keep all secrets private.
 3. Apply the PostgreSQL migrations and populate the initial portfolio record:
 
    ```sh
@@ -36,7 +36,7 @@ A full-stack portfolio built with Next.js App Router, TypeScript, Prisma, and Ne
    npm run dev
    ```
 
-5. Open `http://localhost:5173`. Go to `/bosdik` to create the first administrator account. There are no default credentials; the one-time first account requires a strong access code.
+5. Open `http://localhost:5173`. Go to `/bosdik` to create the first administrator account. There are no default credentials; the setup form requires the server-side `ADMIN_SETUP_TOKEN` plus a strong access code (20–72 characters). You can remove `ADMIN_SETUP_TOKEN` from the environment after the admin has been created.
 
 The legacy SQLite migrations are preserved in `prisma/sqlite-migrations/` for reference; Prisma deploys only the PostgreSQL migrations in `prisma/migrations/`. The old local database at `prisma/dev.db` is not used by the Neon-backed app.
 
@@ -50,7 +50,7 @@ To add authenticator-app two-factor verification, deploy the database migration 
 - `scripts/` — admin CLI (`admin/`), test scripts (`tests/`) with their shims (`shims/`), and Windows dev helpers (`windows/`).
 - `public/images/` and `public/resume/` — static images and résumé assets.
 - `src/app/` — Next.js pages, layouts, and API route handlers.
-- `src/features/portfolio/` — the public site: `PortfolioApp` plus one folder per section (hero, about, skills, education, projects, experience, contact, résumé, navigation).
+- `src/features/portfolio/` — the public site: `PortfolioApp` plus one folder per section (hero, about, knowledge, education, projects, experience, contact, résumé, navigation).
 - `src/features/bosdik/` — the admin dashboard served at `/bosdik`: shell, login, message inbox, and `sections/` (overview, portfolio editors, messages, profile, social links, settings).
 - `src/components/` — UI shared across features (animated background).
 
@@ -86,11 +86,12 @@ The hardening applied in this codebase:
   Every page is `force-dynamic`, which this depends on — a statically prerendered page would be emitted without a nonce and its scripts would be blocked.
   **Development is the one exception.** `npm run dev` uses `next dev --webpack`, which injects CSS through `style-loader`: it creates a `<style>` element and assigns its text from JavaScript, so there is no stylesheet link to allow-list and a strict `style-src` blocks every rule while logging one violation per CSS chunk. `style-src` and `style-src-attr` therefore add `'unsafe-inline'` **only** when `NODE_ENV !== "production"`. The production policy is unchanged and still carries no inline escape hatch for either script or style. The posture check reads the *production* policy, so the admin dashboard does not show a permanent false "fail" locally.
   `npm run test:csp` enforces this. It renders `About` and `ProjectCard` with **populated** image URLs and asserts no inline styles reach the markup, because the violation only appears when those fields are set — a default-content render passes even with the bug present. It also scans `src/` for any `style={{…}}` so a new one is caught at review time rather than in the console.
-- **Request size limits** — `/api/portfolio` rejects bodies over 256 KB and `/api/messages` over 32 KB, checked both against `content-length` and against the serialised payload so a chunked request cannot bypass it. Contact messages are also capped at 30,000 characters.
+- **Request size limits** — `/api/portfolio` rejects bodies over 256 KB; `/api/messages`, auth endpoints and upload-token requests have their own caps. All limits are checked both against `content-length` and against the serialised payload so a chunked request cannot bypass them. Contact messages are also capped at 30,000 characters.
 - **Content validation** — every admin-supplied string has a length cap and is rejected if it contains control characters (tab, newline and carriage return are allowed); URLs must be `http`/`https`, which blocks `javascript:` and `data:` sources; arrays are capped in length.
-- **Rate limiting** — sign-in is capped at 10 attempts per 15 minutes per client address *and* at a shared ceiling of 200, so rotating `X-Forwarded-For` cannot buy unlimited attempts. Contact messages are capped at 5 per 15 minutes. Bucket keys are SHA-256 hashed with `SESSION_SECRET`, so the table never stores raw addresses.
+- **Rate limiting** — sign-in is capped at 10 attempts per 15 minutes per client address *and* at a shared ceiling of 200; failed attempts now increment both buckets, so rotating `X-Forwarded-For` cannot buy unlimited attempts. Contact messages are capped at 5 per 15 minutes per address and 100 globally. Bucket keys are SHA-256 hashed with `SESSION_SECRET`, so the table never stores raw addresses.
 - **Client address trust** — `TRUST_PROXY_HEADERS` now **fails closed**: forwarding headers are ignored unless an operator sets it to `"true"`. Clients whose address cannot be resolved share one bucket instead of getting a fresh one per forged header. Set it to `"true"` only when a proxy or CDN overwrites `X-Forwarded-For`.
-- **Access codes** — sign-in uses a single access code instead of an email and password pair. New codes must be at least 20 characters, use at least 10 distinct characters, avoid sequential or repeated patterns, and must not appear in the weak-code list. The rules live in `src/lib/access-code.ts` and are applied identically by the API and the `admin:reset-code` CLI. Codes are compared after normalisation (trimmed, whitespace collapsed, upper-cased) so that a capitalisation slip cannot lock you out, and only the bcrypt hash is ever stored.
+- **First-admin setup** — creating the initial admin requires a server-side `ADMIN_SETUP_TOKEN` as well as a strong access code, so an unauthenticated visitor cannot claim a fresh database. The endpoint refuses all requests once an admin exists.
+- **Access codes** — sign-in uses a single access code instead of an email and password pair. New codes must be 20–72 characters (72 bytes maximum, matching bcrypt's input limit), use at least 10 distinct characters, avoid sequential or repeated patterns, and must not appear in the weak-code list. The rules live in `src/lib/access-code.ts` and are applied identically by the API and the `admin:reset-code` CLI. Codes are compared after normalisation (trimmed, whitespace collapsed, upper-cased) so that a capitalisation slip cannot lock you out, and only the bcrypt hash is ever stored.
 - **Session revocation** — changing your access code increments `Admin.sessionVersion` and destroys the current cookie, which signs out every other device immediately. `npm run admin:reset-code` does the same, and no longer disables your authenticator unless you explicitly type `DISABLE`. Because there is no email recovery path, that CLI is the only way back in if the code is lost.
 - **CSRF** — every state-changing route checks both `Origin` and `Sec-Fetch-Site` before doing any work.
 

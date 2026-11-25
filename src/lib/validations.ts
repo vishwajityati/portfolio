@@ -1,14 +1,14 @@
-import { emptyPortfolio, type Education, type Experience, type PortfolioContent, type Project, type SkillGroup } from "@/types";
+import { emptyPortfolio, type Education, type Experience, type PortfolioContent, type Project, type KnowledgeGroup } from "@/types";
 
-/** Proficiency steps are rendered from `.skill-bar-*` classes, so the value is snapped to 5s. */
-export const SKILL_LEVEL_STEP = 5;
+/** Proficiency steps are rendered from `.knowledge-bar-*` classes, so the value is snapped to 5s. */
+export const KNOWLEDGE_LEVEL_STEP = 5;
 
 /** Rounds a proficiency to the nearest step and clamps it into the 0–100 the bar classes cover. */
-export function snapSkillLevel(value: unknown): number {
+export function snapKnowledgeLevel(value: unknown): number {
   const numeric = typeof value === "number" ? value : Number(value);
   if (!Number.isFinite(numeric)) return 0;
   const clamped = Math.min(100, Math.max(0, numeric));
-  return Math.round(clamped / SKILL_LEVEL_STEP) * SKILL_LEVEL_STEP;
+  return Math.round(clamped / KNOWLEDGE_LEVEL_STEP) * KNOWLEDGE_LEVEL_STEP;
 }
 
 /**
@@ -33,8 +33,8 @@ export const PORTFOLIO_LIMITS = {
   education: 40,
   experience: 40,
   points: 40,
-  skillGroups: 20,
-  skillsPerGroup: 60,
+  knowledgeGroups: 20,
+  knowledgePerGroup: 60,
   groupTitle: 80
 } as const;
 
@@ -99,19 +99,19 @@ function isExperience(value: unknown): value is Experience {
     && isBoundedStringList(value.points, PORTFOLIO_LIMITS.points, PORTFOLIO_LIMITS.longText);
 }
 
-function isSkillGroup(value: unknown): value is SkillGroup {
+function isKnowledgeGroup(value: unknown): value is KnowledgeGroup {
   return isRecord(value)
     && isBoundedText(value.title, PORTFOLIO_LIMITS.groupTitle)
-    && Array.isArray(value.skills)
-    && value.skills.length <= PORTFOLIO_LIMITS.skillsPerGroup
-    && value.skills.every((skill) =>
-      isRecord(skill)
-      && isBoundedText(skill.name, PORTFOLIO_LIMITS.listItem)
-      && skill.name.trim().length > 0
-      && typeof skill.level === "number"
-      && Number.isFinite(skill.level)
-      && skill.level >= 0
-      && skill.level <= 100);
+    && Array.isArray(value.knowledge)
+    && value.knowledge.length <= PORTFOLIO_LIMITS.knowledgePerGroup
+    && value.knowledge.every((knowledge) =>
+      isRecord(knowledge)
+      && isBoundedText(knowledge.name, PORTFOLIO_LIMITS.listItem)
+      && knowledge.name.trim().length > 0
+      && typeof knowledge.level === "number"
+      && Number.isFinite(knowledge.level)
+      && knowledge.level >= 0
+      && knowledge.level <= 100);
 }
 
 export function isPortfolioContent(value: unknown): value is PortfolioContent {
@@ -170,32 +170,46 @@ export function isPortfolioContent(value: unknown): value is PortfolioContent {
 /**
  * Brings a stored `education` object up to the current shape.
  *
- * Skills used to be a flat `string[]`. They are now grouped (`skillGroups`) and each carries a
- * proficiency level. A record written before that change would fail validation outright, which
- * `normalizePortfolioContent` treats as "malformed" and answers with defaults — silently showing
- * the owner the seed skill list instead of their own. So the legacy shape is migrated in place:
- * the old names are preserved as a single "Skills" group at a neutral level, and only when no
- * `skillGroups` are present.
+ * Entries used to be a flat `string[]`, then grouped under `skillGroups` with each group holding
+ * `skills`. The rename moved those keys to `knowledgeGroups` / `knowledge` at both levels. A record
+ * written under either older name would fail validation outright, which `normalizePortfolioContent`
+ * treats as "malformed" and answers with defaults — silently showing the owner the seed knowledge
+ * list instead of their own. So legacy shapes are migrated in place: the old names are preserved,
+ * and the flat list becomes a single "Knowledge" group at a neutral level.
  *
  * Levels are snapped to the render step so a migrated value always maps to a real CSS class.
  */
+function migrateKnowledgeGroup(group: unknown): unknown {
+  if (!isRecord(group)) return group;
+  // Pre-rename groups held their entries under `skills`; prefer the current key when present.
+  return {
+    ...group,
+    knowledge: Array.isArray(group.knowledge) ? group.knowledge : group.skills,
+  };
+}
+
 function migrateEducation(education: unknown, fallback: PortfolioContent["education"]): unknown {
   const records = Array.isArray(education) ? education : isRecord(education) ? [education] : education;
   if (!Array.isArray(records)) return records;
 
   return records.map((record) => {
     if (!isRecord(record)) return record;
-    const legacySkills = record.skills;
-    const migrated = Array.isArray(legacySkills) && legacySkills.length > 0 && !Array.isArray(record.skillGroups)
+    // Legacy storage keys: `skills` was the old flat list, `skillGroups` the old grouped key.
+    const legacyFlat = record.skills;
+    const storedGroups = record.knowledgeGroups ?? record.skillGroups;
+    const currentGroups = Array.isArray(storedGroups)
+      ? storedGroups.map(migrateKnowledgeGroup)
+      : storedGroups;
+    const migrated = Array.isArray(legacyFlat) && legacyFlat.length > 0 && !Array.isArray(currentGroups)
       ? [{
-          title: "Skills",
-          skills: legacySkills
-            .filter((skill): skill is string => typeof skill === "string" && skill.trim().length > 0)
-            .map((name) => ({ name, level: snapSkillLevel(75) }))
+          title: "Knowledge",
+          knowledge: legacyFlat
+            .filter((entry): entry is string => typeof entry === "string" && entry.trim().length > 0)
+            .map((name) => ({ name, level: snapKnowledgeLevel(75) }))
         }]
-      : record.skillGroups;
+      : currentGroups;
 
-    return { ...fallback[0], ...record, skillGroups: migrated };
+    return { ...fallback[0], ...record, knowledgeGroups: migrated };
   });
 }
 
@@ -204,6 +218,8 @@ export function normalizePortfolioContent(value: unknown, fallback: PortfolioCon
 
   const normalized: unknown = {
     ...value,
+    // Top-level `skills` was renamed to `knowledge`; keep records from before the rename usable.
+    knowledge: isRecord(value.knowledge) ? value.knowledge : isRecord(value.skills) ? value.skills : fallback.knowledge,
     education: migrateEducation(value.education, fallback.education),
     contact: isRecord(value.contact) ? { ...fallback.contact, ...value.contact } : value.contact,
     seo: isRecord(value.seo) ? { ...fallback.seo, ...value.seo } : fallback.seo,
@@ -219,7 +235,7 @@ function isEducation(value: unknown): value is Education {
     period: PORTFOLIO_LIMITS.shortText,
     summary: PORTFOLIO_LIMITS.longText,
     beyond: PORTFOLIO_LIMITS.longText
-  }) && Array.isArray(value.skillGroups)
-    && value.skillGroups.length <= PORTFOLIO_LIMITS.skillGroups
-    && value.skillGroups.every(isSkillGroup);
+  }) && Array.isArray(value.knowledgeGroups)
+    && value.knowledgeGroups.length <= PORTFOLIO_LIMITS.knowledgeGroups
+    && value.knowledgeGroups.every(isKnowledgeGroup);
 }

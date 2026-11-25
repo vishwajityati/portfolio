@@ -1,25 +1,43 @@
 import { NextRequest, NextResponse } from "next/server";
+import { exceedsDeclaredSize, exceedsSerializedSize } from "@/lib/security";
 
 export const dynamic = "force-dynamic";
+
+const MAX_REPORT_BYTES = 16_000;
+const MAX_LOG_VALUE_LENGTH = 300;
 
 /**
  * Receives Content-Security-Policy violation reports from the browser.
  *
- * When a resource is blocked by CSP, the browser POSTs a JSON report here.
- * This lets you detect attempted XSS attacks and misconfigured policies.
- *
- * Reports are logged to the server console. In production, forward these
- * to a log aggregation service (Datadog, Loki, etc.) for monitoring.
+ * Reports are logged to the server console. In production, forward these to a
+ * log aggregation service (Datadog, Loki, etc.) for monitoring. Reports are
+ * untrusted input: size is capped and log fields are sanitised before use.
  */
+function logValue(value: unknown): string {
+  if (typeof value !== "string") return "unknown";
+  const sanitized = value.replace(/[\u0000-\u001f\u007f]/g, " ").trim();
+  return sanitized ? sanitized.slice(0, MAX_LOG_VALUE_LENGTH) : "unknown";
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const body: unknown = await request.json();
+    if (exceedsDeclaredSize(request, MAX_REPORT_BYTES)) {
+      return new NextResponse(null, { status: 204 });
+    }
 
-    if (typeof body === "object" && body !== null && "csp-report" in body) {
-      const report = body["csp-report"] as Record<string, unknown>;
-      const blockedUri = typeof report["blocked-uri"] === "string" ? report["blocked-uri"] : "unknown";
-      const violatedDirective = typeof report["violated-directive"] === "string" ? report["violated-directive"] : "unknown";
-      const documentUri = typeof report["document-uri"] === "string" ? report["document-uri"] : "unknown";
+    const body: unknown = await request.json();
+    if (exceedsSerializedSize(body, MAX_REPORT_BYTES)) {
+      return new NextResponse(null, { status: 204 });
+    }
+
+    const reportContainer = typeof body === "object" && body !== null && "csp-report" in body
+      ? body["csp-report"]
+      : null;
+    if (typeof reportContainer === "object" && reportContainer !== null && !Array.isArray(reportContainer)) {
+      const report = reportContainer as Record<string, unknown>;
+      const blockedUri = logValue(report["blocked-uri"]);
+      const violatedDirective = logValue(report["violated-directive"]);
+      const documentUri = logValue(report["document-uri"]);
 
       console.warn(
         `[security] CSP violation at ${new Date().toISOString()}: ` +

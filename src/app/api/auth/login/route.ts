@@ -2,7 +2,14 @@ import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/auth";
 import { checkLoginRateLimit, recordFailedLogin } from "@/lib/auth-rate-limit";
-import { getClientAddress, hasSameOrigin, isIpAllowed } from "@/lib/security";
+import {
+  AUTH_BODY_MAX_BYTES,
+  exceedsDeclaredSize,
+  exceedsSerializedSize,
+  getClientAddress,
+  hasSameOrigin,
+  isIpAllowed
+} from "@/lib/security";
 import { normalizeAccessCode } from "@/lib/access-code";
 import { prisma } from "@/lib/prisma";
 import { withDatabaseRetry } from "@/lib/db-retry";
@@ -22,7 +29,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Too many attempts. Try again in 15 minutes." }, { status: 429 });
     }
 
+    if (exceedsDeclaredSize(request, AUTH_BODY_MAX_BYTES)) {
+      return NextResponse.json({ error: "Request is too large." }, { status: 413 });
+    }
+
     const body: unknown = await request.json();
+    if (exceedsSerializedSize(body, AUTH_BODY_MAX_BYTES)) {
+      return NextResponse.json({ error: "Request is too large." }, { status: 413 });
+    }
+
     const code = typeof body === "object" && body !== null && "code" in body && typeof body.code === "string"
       ? normalizeAccessCode(body.code)
       : "";

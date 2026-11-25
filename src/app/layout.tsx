@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getPortfolioContent } from "@/lib/portfolio";
+import { AnimatedBackground } from "@/features/portfolio/background/AnimatedBackground";
 import "./globals.css";
 
 export const dynamic = "force-dynamic";
@@ -31,7 +32,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
       </head>
-      <body>{children}</body>
+      <body>
+        <AnimatedBackground />
+        {children}
+      </body>
     </html>
   );
 }

@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import {  LoaderCircle } from "lucide-react";
-import { AnimatedBackground } from "@/features/portfolio/background/AnimatedBackground";
 import { CmsPanelDashboard, type CmsPanelSection } from "@/features/cms-panel/CmsPanelDashboard/CmsPanelDashboard";
 import { LoginForm } from "@/features/cms-panel/LoginForm/LoginForm";
 import type { InboxSummary } from "@/features/cms-panel/MessageInbox/MessageInbox";
@@ -20,6 +19,7 @@ export function CmsPanelShell() {
   const [busy, setBusy] = useState(false);
   const [totpCode, setTotpCode] = useState("");
   const [accessCode, setAccessCode] = useState("");
+  const [setupToken, setSetupToken] = useState("");
   const [content, setContent] = useState<PortfolioContent | null>(null);
   const [savedContent, setSavedContent] = useState<PortfolioContent | null>(null);
   const [activeSection, setActiveSection] = useState<CmsPanelSection>("overview");
@@ -76,7 +76,7 @@ export function CmsPanelShell() {
       } else {
         const result = await apiJson<{ authenticated: boolean; requiresTotp?: boolean }>(setupRequired ? "/api/auth/setup" : "/api/auth/login", {
           method: "POST",
-          body: JSON.stringify({ code: accessCode })
+          body: JSON.stringify(setupRequired ? { code: accessCode, setupToken } : { code: accessCode })
         });
         if (result.requiresTotp) {
           setAccessCode("");
@@ -86,6 +86,7 @@ export function CmsPanelShell() {
       }
       setAuthenticated(true);
       setSetupRequired(false);
+      setSetupToken("");
       const [content, summary] = await Promise.all([
         apiJson<PortfolioContent>("/api/portfolio"),
         apiJson<InboxSummary>("/api/messages?summary=1")
@@ -131,8 +132,6 @@ export function CmsPanelShell() {
 
   return (
     <div className="admin-page">
-      <AnimatedBackground />
-      
       {loading ? <div className="admin-loading"><LoaderCircle className="spin" /> Loading your dashboard…</div> : authenticated && content ? (
         <>
           {sessionWarning && (
@@ -172,10 +171,12 @@ export function CmsPanelShell() {
           setupRequired={setupRequired}
           requiresTotp={requiresTotp}
           accessCode={accessCode}
+          setupToken={setupToken}
           totpCode={totpCode}
           busy={busy}
           error={error}
           onAccessCodeChange={setAccessCode}
+          onSetupTokenChange={setSetupToken}
           onTotpCodeChange={setTotpCode}
           onCancelTotp={() => {
             setRequiresTotp(false);

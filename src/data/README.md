@@ -7,5 +7,5 @@ Static/default seed data. Used to initialize the portfolio when the database is 
 | `personal.ts` | Default portfolio content (name, intro, about, contact, SEO) |
 | `projects.ts` | Default projects list |
 | `experience.ts` | Default experience entries |
-| `education.ts` | Default education with skill groups |
-| `navigation.ts` | Navigation items (home, about, skills, etc.) |
+| `education.ts` | Default education with knowledge groups |
+| `navigation.ts` | Navigation items (home, about, knowledge, etc.) |

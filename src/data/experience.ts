@@ -17,7 +17,7 @@ export const experience: Experience[] = [
     period: "2025 – Present",
     points: [
       "Studying computer science fundamentals, programming, databases, and software development.",
-      "Developing programming skills with Java, JavaScript, C/C++, SQL, and Python.",
+      "Developing programming knowledge with Java, JavaScript, C/C++, SQL, and Python.",
       "Practicing Data Structures & Algorithms and problem-solving.",
       "Building academic and personal projects to apply theoretical knowledge."
     ]

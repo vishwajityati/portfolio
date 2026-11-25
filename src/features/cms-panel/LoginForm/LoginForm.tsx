@@ -9,10 +9,12 @@ interface LoginFormProps {
   setupRequired: boolean;
   requiresTotp: boolean;
   accessCode: string;
+  setupToken: string;
   totpCode: string;
   busy: boolean;
   error: string;
   onAccessCodeChange: (value: string) => void;
+  onSetupTokenChange: (value: string) => void;
   onTotpCodeChange: (value: string) => void;
   onCancelTotp: () => void;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
@@ -22,10 +24,12 @@ export function LoginForm({
   setupRequired,
   requiresTotp,
   accessCode,
+  setupToken,
   totpCode,
   busy,
   error,
   onAccessCodeChange,
+  onSetupTokenChange,
   onTotpCodeChange,
   onCancelTotp,
   onSubmit
@@ -50,6 +54,22 @@ export function LoginForm({
           </>
         ) : (
           <>
+            {setupRequired && (
+              <>
+                <label>Setup token
+                  <input
+                    type="password"
+                    value={setupToken}
+                    onChange={(event) => onSetupTokenChange(event.target.value)}
+                    autoComplete="off"
+                    spellCheck={false}
+                    maxLength={512}
+                    required
+                  />
+                </label>
+                <small>The one-time token configured as ADMIN_SETUP_TOKEN on the server.</small>
+              </>
+            )}
             <label>Access code
               <span className="auth-password-field">
                 <input

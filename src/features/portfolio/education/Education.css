@@ -78,7 +78,7 @@
     gap: 7px;
 }
 
-.skill-tags {
+.knowledge-tags {
     margin-top: 9px;
 }
 
@@ -109,20 +109,20 @@
 }
 
 /*
- * Pointer to the dedicated Skills section, which now owns the tags themselves.
+ * Pointer to the dedicated Knowledge section, which now owns the tags themselves.
  */
-.education-skill-teaser {
+.education-knowledge-teaser {
     position: relative;
     z-index: 1;
     margin: 17px 0 0;
 }
 
-.education-skill-teaser .learning-label {
+.education-knowledge-teaser .learning-label {
     display: block;
     margin-bottom: 8px;
 }
 
-.education-skill-teaser a {
+.education-knowledge-teaser a {
     color: var(--mint);
     font: 1rem var(--mono);
     letter-spacing: .09em;
@@ -132,7 +132,7 @@
     transition: color .24s ease, border-color .24s ease;
 }
 
-.education-skill-teaser a:hover {
+.education-knowledge-teaser a:hover {
     color: #d6f7e3;
     border-color: rgba(165, 241, 200, .6);
 }
@@ -239,7 +239,7 @@
         line-height: 1.75;
     }
 
-    .education-skill-teaser {
+    .education-knowledge-teaser {
         margin-top: 15px;
     }
 
@@ -327,11 +327,11 @@
         font-size: 1rem;
     }
 
-    .education-skill-teaser {
+    .education-knowledge-teaser {
         margin-top: 14px;
     }
 
-    .education-skill-teaser a {
+    .education-knowledge-teaser a {
         font-size: 1rem;
     }
 
@@ -449,7 +449,7 @@
         font-size: 1rem;
     }
 
-    .education-skill-teaser a {
+    .education-knowledge-teaser a {
         font-size: 1rem;
     }
 

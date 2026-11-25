@@ -24,7 +24,7 @@
   min-height: 100vh;
   padding: 28px clamp(20px, 6vw, 88px) 80px;
   color: var(--text);
-  background: var(--bg);
+  background: transparent;
 }
 
 .three-d-preview-header,

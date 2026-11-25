@@ -5,10 +5,10 @@ export const education: Education[] = [{
   institution: "Chhatrapati Shivaji Maharaj University, Panvel",
   period: "2025 – Present",
   summary: "My BCA journey is helping me build a strong foundation in computer science and software development. Alongside my academic studies, I actively learn through practical projects and independent exploration.",
-  skillGroups: [
+  knowledgeGroups: [
     {
       title: "Frontend Development",
-      skills: [
+      knowledge: [
         { name: "React", level: 90 },
         { name: "Next.js", level: 80 },
         { name: "JavaScript", level: 90 },
@@ -17,7 +17,7 @@ export const education: Education[] = [{
     },
     {
       title: "Backend Development",
-      skills: [
+      knowledge: [
         { name: "Node.js", level: 80 },
         { name: "Express.js", level: 80 },
         { name: "Java", level: 70 }
@@ -25,7 +25,7 @@ export const education: Education[] = [{
     },
     {
       title: "Database",
-      skills: [
+      knowledge: [
         { name: "PostgreSQL", level: 80 },
         { name: "MySQL", level: 80 },
         { name: "Prisma", level: 70 }

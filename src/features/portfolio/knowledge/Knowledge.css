@@ -1,8 +1,8 @@
-.skills {
+.knowledge {
   position: relative;
 }
 
-.skills .section-heading {
+.knowledge .section-heading {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -10,11 +10,11 @@
   margin-bottom: 44px;
 }
 
-.skills .section-heading h2 {
+.knowledge .section-heading h2 {
   margin: 8px 0 0;
 }
 
-.skills .heading-aside {
+.knowledge .heading-aside {
   max-width: 230px;
   padding-bottom: 5px;
   color: var(--muted);
@@ -29,7 +29,7 @@
    GRID
 ========================= */
 
-.skills-grid {
+.knowledge-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
@@ -39,14 +39,14 @@
    CARD
 ========================= */
 
-.skill-card {
+.knowledge-card {
   position: relative;
   min-width: 0;
   padding: 28px;
   
 }
 
-.skill-card::before {
+.knowledge-card::before {
   content: "";
 
   position: absolute;
@@ -71,7 +71,7 @@
   transition: opacity 400ms ease;
 }
 
-.skill-card:hover {
+.knowledge-card:hover {
   transform: translateY(-4px);
 
   border-color: rgba(132, 230, 227, 0.075);
@@ -84,7 +84,7 @@
     0 0 30px rgba(132, 230, 227, 0.06);
 }
 
-.skill-card:hover::before {
+.knowledge-card:hover::before {
   opacity: 1;
 }
 
@@ -92,7 +92,7 @@
    CARD HEADER
 ========================= */
 
-.skill-card-header {
+.knowledge-card-header {
   position: relative;
   z-index: 1;
 
@@ -102,7 +102,7 @@
   gap: 14px;
 }
 
-.skill-card-icon {
+.knowledge-card-icon {
   display: grid;
 
   width: 42px;
@@ -126,7 +126,7 @@
     box-shadow 350ms ease;
 }
 
-.skill-card:hover .skill-card-icon {
+.knowledge-card:hover .knowledge-card-icon {
   transform: scale(1.06) rotate(-4deg);
 
   border-color: rgba(132, 230, 227, 0.42);
@@ -136,11 +136,11 @@
   box-shadow: 0 0 20px rgba(132, 230, 227, 0.1);
 }
 
-.skill-card-heading {
+.knowledge-card-heading {
   min-width: 0;
 }
 
-.skill-card-number {
+.knowledge-card-number {
   display: block;
 
   margin-bottom: 3px;
@@ -154,7 +154,7 @@
   opacity: 0.7;
 }
 
-.skill-card-heading h3 {
+.knowledge-card-heading h3 {
   margin: 0;
 
   color: #e7edf0;
@@ -171,7 +171,7 @@
    DIVIDER
 ========================= */
 
-.skill-card-divider {
+.knowledge-card-divider {
   position: relative;
   z-index: 1;
 
@@ -189,10 +189,10 @@
 }
 
 /* =========================
-   SKILL LIST
+   KNOWLEDGE LIST
 ========================= */
 
-.skill-list {
+.knowledge-list {
   position: relative;
   z-index: 1;
 
@@ -205,7 +205,7 @@
   padding: 0;
 }
 
-.skill-item {
+.knowledge-item {
   display: flex;
 
   align-items: center;
@@ -229,7 +229,7 @@
     box-shadow 260ms ease;
 }
 
-.skill-item:hover {
+.knowledge-item:hover {
   transform: translateX(4px);
 
   border-color: rgba(132, 230, 227, 0.28);
@@ -239,7 +239,7 @@
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
 }
 
-.skill-name {
+.knowledge-name {
   min-width: 0;
 
   color: #c7d0d5;
@@ -255,7 +255,7 @@
   transition: color 260ms ease;
 }
 
-.skill-item:hover .skill-name {
+.knowledge-item:hover .knowledge-name {
   color: #edf8f7;
 }
 
@@ -263,7 +263,7 @@
    DOT INDICATOR
 ========================= */
 
-.skill-indicator {
+.knowledge-indicator {
   display: inline-flex;
 
   align-items: center;
@@ -273,7 +273,7 @@
   flex: 0 0 auto;
 }
 
-.skill-dot {
+.knowledge-dot {
   width: 6px;
   height: 6px;
 
@@ -290,7 +290,7 @@
     box-shadow 260ms ease;
 }
 
-.skill-dot.active {
+.knowledge-dot.active {
   border-color: var(--mint);
 
   background: var(--mint);
@@ -298,17 +298,17 @@
   box-shadow: 0 0 7px rgba(132, 230, 227, 0.42);
 }
 
-.skill-item:hover .skill-dot:nth-child(1) {
+.knowledge-item:hover .knowledge-dot:nth-child(1) {
   transform: scale(1.15);
 }
 
-.skill-item:hover .skill-dot:nth-child(2) {
+.knowledge-item:hover .knowledge-dot:nth-child(2) {
   transform: scale(1.15);
 
   transition-delay: 70ms;
 }
 
-.skill-item:hover .skill-dot:nth-child(3) {
+.knowledge-item:hover .knowledge-dot:nth-child(3) {
   transform: scale(1.15);
 
   transition-delay: 110ms;
@@ -318,12 +318,12 @@
    REVEAL
 ========================= */
 
-.skill-card.reveal {
+.knowledge-card.reveal {
   transform: translateY(28px);
   opacity: 0;
 }
 
-.skill-card.reveal.is-visible {
+.knowledge-card.reveal.is-visible {
   transform: translateY(0);
   opacity: 1;
 }
@@ -332,25 +332,25 @@
    TABLET
 ========================= */
 /* =========================================================
-   SKILLS — RESPONSIVE IMPROVEMENTS
+   KNOWLEDGE — RESPONSIVE IMPROVEMENTS
    ========================================================= */
 
 /* TABLET / SMALL LAPTOP */
 @media (max-width: 1024px) {
-  .skills .section-heading {
+  .knowledge .section-heading {
     gap: 24px;
     margin-bottom: 38px;
   }
 
-  .skills .heading-aside {
+  .knowledge .heading-aside {
     max-width: 210px;
   }
 
-  .skills-grid {
+  .knowledge-grid {
     gap: 16px;
   }
 
-  .skill-card {
+  .knowledge-card {
     padding: 24px;
   }
 }
@@ -358,49 +358,49 @@
 
 /* TABLET */
 @media (max-width: 820px) {
-  .skills .section-heading {
+  .knowledge .section-heading {
     gap: 18px;
   }
 
-  .skills .heading-aside {
+  .knowledge .heading-aside {
     max-width: 190px;
     font-size: 1rem;
   }
 
-  .skills-grid {
+  .knowledge-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px;
   }
 
-  .skill-card {
+  .knowledge-card {
     padding: 22px 18px 23px;
   }
 
-  .skill-card-header {
+  .knowledge-card-header {
     margin:10%;
     gap: 11px;
   }
 
-  .skill-card-icon {
+  .knowledge-card-icon {
     width: 40px;
     height: 40px;
     flex-basis: 40px;
   }
 
-  .skill-card-heading h3 {
+  .knowledge-card-heading h3 {
     font-size: clamp(1rem, 2.5vw, 20px);
   }
 
-  .skill-card-divider {
+  .knowledge-card-divider {
     margin: 21px 0 17px;
   }
 
-  .skill-item {
+  .knowledge-item {
     gap: 10px;
     min-height: 40px;
   }
 
-  .skill-name {
+  .knowledge-name {
     font-size: 1rem;
   }
 }
@@ -408,16 +408,16 @@
 
 /* MOBILE */
 @media (max-width: 620px) {
-  .skills .section-heading {
+  .knowledge .section-heading {
     display: block;
     margin-bottom: 28px;
   }
 
-  .skills .section-heading h2 {
+  .knowledge .section-heading h2 {
     font-size: clamp(32px, 8vw, 43px);
   }
 
-  .skills .heading-aside {
+  .knowledge .heading-aside {
     max-width: none;
     margin-top: 13px;
     font-size: 1rem;
@@ -425,52 +425,52 @@
     text-align: left;
   }
 
-  .skills-grid {
+  .knowledge-grid {
     grid-template-columns: 1fr;
     gap: 13px;
   }
 
-  .skill-card {
+  .knowledge-card {
     width: 100%;
     padding: 21px 16px 22px;
   }
 
-  .skill-card-header {
+  .knowledge-card-header {
     gap: 12px;
   }
 
-  .skill-card-icon {
+  .knowledge-card-icon {
     width: 40px;
     height: 40px;
     flex-basis: 40px;
   }
 
-  .skill-card-heading h3 {
+  .knowledge-card-heading h3 {
     font-size: 18px;
   }
 
-  .skill-card-divider {
+  .knowledge-card-divider {
     margin: 19px 0 15px;
   }
 
-  .skill-list {
+  .knowledge-list {
     gap: 8px;
   }
 
-  .skill-item {
+  .knowledge-item {
     min-height: 41px;
     padding: 8px 10px;
   }
 
-  .skill-name {
+  .knowledge-name {
     font-size: 1rem;
   }
 
-  .skill-indicator {
+  .knowledge-indicator {
     gap: 4px;
   }
 
-  .skill-dot {
+  .knowledge-dot {
     width: 5px;
     height: 5px;
   }
@@ -479,56 +479,56 @@
 
 /* SMALL MOBILE */
 @media (max-width: 480px) {
-  .skills .section-heading h2 {
+  .knowledge .section-heading h2 {
     font-size: clamp(29px, 9vw, 38px);
   }
 
-  .skills .heading-aside {
+  .knowledge .heading-aside {
     font-size: 1rem;
   }
 
-  .skill-card {
+  .knowledge-card {
     padding: 19px 14px 20px;
     border-radius: 11px;
   }
 
-  .skill-card-header {
+  .knowledge-card-header {
     gap: 10px;
   }
 
-  .skill-card-icon {
+  .knowledge-card-icon {
     width: 37px;
     height: 37px;
     flex-basis: 37px;
   }
 
-  .skill-card-icon svg {
+  .knowledge-card-icon svg {
     width: 17px;
     height: 17px;
   }
 
-  .skill-card-heading h3 {
+  .knowledge-card-heading h3 {
     font-size: 16px;
   }
 
-  .skill-card-number {
+  .knowledge-card-number {
     font-size: 1rem;
   }
 
-  .skill-item {
+  .knowledge-item {
     min-height: 39px;
     padding: 7px 9px;
   }
 
-  .skill-name {
+  .knowledge-name {
     font-size: 1rem;
   }
 
-  .skill-indicator {
+  .knowledge-indicator {
     gap: 3px;
   }
 
-  .skill-dot {
+  .knowledge-dot {
     width: 5px;
     height: 5px;
   }
@@ -537,43 +537,43 @@
 
 /* VERY SMALL PHONES */
 @media (max-width: 360px) {
-  .skills-grid {
+  .knowledge-grid {
     gap: 11px;
   }
 
-  .skill-card {
+  .knowledge-card {
     padding: 17px 12px 18px;
   }
 
-  .skill-card-header {
+  .knowledge-card-header {
     gap: 9px;
   }
 
-  .skill-card-icon {
+  .knowledge-card-icon {
     width: 34px;
     height: 34px;
     flex-basis: 34px;
   }
 
-  .skill-card-icon svg {
+  .knowledge-card-icon svg {
     width: 15px;
     height: 15px;
   }
 
-  .skill-card-heading h3 {
+  .knowledge-card-heading h3 {
     font-size: 1rem;
   }
 
-  .skill-item {
+  .knowledge-item {
     min-height: 37px;
     padding: 7px 8px;
   }
 
-  .skill-name {
+  .knowledge-name {
     font-size: 1rem;
   }
 
-  .skill-dot {
+  .knowledge-dot {
     width: 4px;
     height: 4px;
   }
@@ -582,17 +582,17 @@
 
 /* REDUCED MOTION */
 @media (prefers-reduced-motion: reduce) {
-  .skill-card,
-  .skill-card::before,
-  .skill-card-icon,
-  .skill-item,
-  .skill-dot {
+  .knowledge-card,
+  .knowledge-card::before,
+  .knowledge-card-icon,
+  .knowledge-item,
+  .knowledge-dot {
     transition: none !important;
     animation: none !important;
   }
 
-  .skill-card:hover,
-  .skill-item:hover {
+  .knowledge-card:hover,
+  .knowledge-item:hover {
     transform: none;
   }
 }

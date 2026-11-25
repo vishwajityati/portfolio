@@ -6,6 +6,6 @@ Shared TypeScript types. Import from `@/types` (barrel export in `index.ts`).
 |------|-------|
 | `index.ts` | `PortfolioContent`, `Contact`, `PortfolioSeo`, `PortfolioSiteSettings`, `emptyPortfolio` |
 | `project.ts` | `Project` |
-| `skills.ts` | `Skill`, `SkillGroup`, `Skills` |
+| `knowledge.ts` | `Knowledge`, `KnowledgeGroup`, `KnowledgeSet` |
 | `experience.ts` | `Experience` |
-| `education.ts` | `Education`, `Skill`, `SkillGroup` |
+| `education.ts` | `Education`, `Knowledge`, `KnowledgeGroup` |

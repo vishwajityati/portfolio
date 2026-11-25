@@ -5,141 +5,56 @@
   overflow: hidden;
   isolation: isolate;
   pointer-events: none;
-  background:
-    radial-gradient(ellipse at 72% 18%, rgba(180, 162, 140, 0.06), transparent 46%),
-    radial-gradient(ellipse at 12% 82%, rgba(140, 126, 112, 0.045), transparent 44%),
-    linear-gradient(135deg, #101010 0%, #181818 48%, #101010 100%);
+  background: linear-gradient(135deg, #101010 0%, #181818 48%, #101010 100%);
 }
 
-.space-planet-canvas,
-.background-scanlines,
-.background-vignette {
+.space-planet-canvas {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  display: block;
+  opacity: 0.9;
 }
 
-.space-planet-canvas {
-  display: none;
-}
-
-.background-scanlines {
-  opacity: 1;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
-  background-size: 100% 5px, 72px 100%;
-  mix-blend-mode: screen;
-}
-
-.background-vignette {
-  background:
-    radial-gradient(ellipse at 58% 42%, transparent 34%, rgba(0, 0, 0, 0.28) 78%, rgba(0, 0, 0, 0.6) 120%),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.3));
-}
-
-/* =========================================================
-   DEVICE TIERS
-   Later rules win, so the order below is narrow -> wide ->
-   viewport-height, with the shortest viewport taking priority.
-   ========================================================= */
-
-/* Touch devices: coarser HUD grid, lighter overlay under content. */
-@media (pointer: coarse) {
-  .background-scanlines {
-    opacity: 0.8;
-    background-size: 100% 6px, 84px 100%;
-  }
-}
-
-/* Tablets and narrow desktop windows. */
-@media (max-width: 1099px) {
-  .space-planet-canvas {
-    opacity: 0.76;
-  }
-
-  .background-scanlines {
-    opacity: 0.85;
-    background-size: 100% 6px, 84px 100%;
-  }
-}
-
-/* Phones and single-column layouts. */
 @media (max-width: 768px) {
-  .portfolio-backdrop {
-    background:
-      radial-gradient(ellipse at 70% 20%, rgba(180, 162, 140, 0.045), transparent 46%),
-      radial-gradient(ellipse at 10% 82%, rgba(140, 126, 112, 0.035), transparent 44%),
-      linear-gradient(135deg, #101010 0%, #151515 48%, #101010 100%);
-  }
-
   .space-planet-canvas {
-    opacity: 0.72;
-  }
-
-  .background-scanlines {
-    opacity: 0.8;
-    background-size: 100% 6px, 72px 100%;
-  }
-
-  .background-vignette {
-    background:
-      radial-gradient(ellipse at 58% 42%, transparent 34%, rgba(0, 0, 0, 0.24) 78%, rgba(0, 0, 0, 0.55) 118%),
-      linear-gradient(90deg, rgba(0, 0, 0, 0.24), rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.28));
+    opacity: 0.78;
   }
 }
 
-/* Small phones: the wash stays lightest behind narrow text columns. */
 @media (max-width: 420px) {
   .space-planet-canvas {
-    opacity: 0.66;
-  }
-
-  .background-scanlines {
     opacity: 0.7;
-    background-size: 100% 7px, 64px 100%;
-  }
-
-  .background-vignette {
-    background:
-      radial-gradient(ellipse at 58% 42%, transparent 28%, rgba(0, 0, 0, 0.22) 76%, rgba(0, 0, 0, 0.5) 118%),
-      linear-gradient(90deg, rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.24));
   }
 }
 
-/* Large desktops. */
+@media (max-width: 320px) {
+  .space-planet-canvas {
+    opacity: 0.62;
+  }
+}
+
 @media (min-width: 1200px) {
+  .space-planet-canvas {
+    opacity: 1;
+  }
+}
+
+@media (min-width: 1700px) {
+  .space-planet-canvas {
+    opacity: 0.94;
+  }
+}
+
+@media (min-width: 2200px) {
   .space-planet-canvas {
     opacity: 0.88;
   }
 }
 
-/* Ultrawide: stretch the grid so it does not read as moire at distance. */
-@media (min-width: 1700px) {
-  .space-planet-canvas {
-    opacity: 0.9;
-  }
-
-  .background-scanlines {
-    background-size: 100% 5px, 96px 100%;
-  }
-}
-
-/* Short landscape viewports (rotated phones, split-screen windows). */
 @media (max-height: 600px) and (orientation: landscape) {
   .space-planet-canvas {
-    opacity: 0.58;
-  }
-
-  .background-scanlines {
-    opacity: 0.7;
-    background-size: 100% 6px, 84px 100%;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .background-scanlines {
-    opacity: 0.7;
+    opacity: 0.65;
   }
 }

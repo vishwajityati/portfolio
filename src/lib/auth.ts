@@ -10,6 +10,14 @@ export interface AdminSession {
   sessionVersion?: number;
 }
 
+/** Rejects missing, short, and documented placeholder secrets before they can be used. */
+export function isSessionSecretStrong(secret: string | undefined): boolean {
+  if (!secret || secret.length < 32) return false;
+  const normalized = secret.trim().toLowerCase();
+  const placeholders = ["replace", "changeme", "example", "placeholder", "your-"];
+  return !placeholders.some((marker) => normalized.includes(marker));
+}
+
 export const sessionOptions: SessionOptions = {
   cookieName: "portfolio.sid",
   password: process.env.SESSION_SECRET ?? "",
@@ -23,11 +31,7 @@ export const sessionOptions: SessionOptions = {
 };
 
 export async function getAdminSession() {
-  if (
-    typeof sessionOptions.password !== "string"
-    || sessionOptions.password.length < 32
-    || sessionOptions.password.includes("replace-this")
-  ) {
+  if (typeof sessionOptions.password !== "string" || !isSessionSecretStrong(sessionOptions.password)) {
     throw new Error("Set SESSION_SECRET to a random value of at least 32 characters.");
   }
   return getIronSession<AdminSession>(await cookies(), sessionOptions);

@@ -1,22 +1,45 @@
+"use client";
 import { useEffect, useRef } from "react";
 import "./AnimatedBackground.css";
 
-type Star = {
+type NetworkNode = {
   x: number;
   y: number;
   z: number;
   size: number;
-  tone: number;
+  phase: number;
 };
 
-/** Star pool. The drawn count is scaled to the viewport on every resize. */
-const stars: Star[] = Array.from({ length: 240 }, (_, i) => ({
-  x: ((i * 73) % 1000) / 1000,
-  y: ((i * 151) % 1000) / 1000,
-  z: ((i * 97) % 1000) / 1000,
-  size: 0.55 + (i % 5) * 0.28,
-  tone: i % 3,
-}));
+type ProjectedNode = {
+  x: number;
+  y: number;
+  z: number;
+  scale: number;
+  size: number;
+  phase: number;
+};
+
+const TAU = Math.PI * 2;
+const MAX_NODES = 140;
+const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
+
+/**
+ * Vogel spiral fills a disc evenly, so the field covers the whole viewport —
+ * including the corners — at every angle of the slow rotation.
+ */
+const nodes: NetworkNode[] = Array.from({ length: MAX_NODES }, (_, i) => {
+  const radius = Math.sqrt((i + 0.5) / MAX_NODES);
+  const angle = i * GOLDEN_ANGLE;
+  const z = (((i * 29) % 100) / 100) * 2 - 1;
+
+  return {
+    x: Math.cos(angle) * radius,
+    y: Math.sin(angle) * radius,
+    z,
+    size: 0.85 + (i % 4) * 0.15,
+    phase: ((i * 53) % 100) / 100,
+  };
+});
 
 /** Backing-store ceiling so 4K/retina screens never allocate huge buffers. */
 const MAX_BACKING_PIXELS = 6_500_000;
@@ -29,10 +52,9 @@ const isLowEndDevice = () => {
 };
 
 /**
- * The canvas measures its own layout box instead of `window.innerWidth`/
- * `innerHeight`, so it tracks the real viewport on every device: mobile
- * address-bar collapse, rotation, pinch-zoom and browser chrome all covered.
- * Detail tiers, star density and pixel ratio then adapt to the measured size.
+ * A slowly rotating network of green dots spread across every page. Every dot
+ * is joined to every other dot with very faint lines, and light pulses drift
+ * along the connections. Motion stops for reduced-motion users and hidden tabs.
  */
 export function AnimatedBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -48,23 +70,16 @@ export function AnimatedBackground() {
     const lowEnd = isLowEndDevice();
     let reducedMotion = motionQuery.matches;
 
-    // Scenery (horizon glow, orbit rings, HUD panels) never moves, so it is
-    // rasterised once per resize and blitted each frame instead of re-stroked.
-    const sceneryCanvas = document.createElement("canvas");
-    const sceneryContext = sceneryCanvas.getContext("2d");
-
     let width = 0;
     let height = 0;
     let pixelRatio = 1;
     let frame = 0;
     let lastPaint = 0;
     let resizeQueued = false;
-    let hasSceneryLayer = false;
     /** 0 = phone / short landscape, 1 = tablet or tight window, 2 = desktop. */
     let detail = 2;
-    let starCount = stars.length;
+    let nodeCount = nodes.length;
 
-    // ---------------------------------------------------------- device tiers
     const classify = () => {
       if (width < 768 || height < 560) detail = 0;
       else if (width < 1200) detail = 1;
@@ -81,149 +96,109 @@ export function AnimatedBackground() {
       pixelRatio = ratio;
     };
 
-    const fitStarCount = () => {
-      const density = Math.round((width * height) / 13_500);
-      const floor = detail === 0 ? 56 : 84;
-      const ceiling = detail === 0 ? (lowEnd ? 64 : 90) : lowEnd ? 140 : stars.length;
-      starCount = Math.min(stars.length, Math.max(floor, density), ceiling);
+    /** Dot density follows viewport area, with floors and ceilings per tier. */
+    const fitNodeCount = () => {
+      const density = Math.round((width * height) / 25_000);
+      const floor = detail === 0 ? 28 : detail === 1 ? 40 : 56;
+      const ceiling = detail === 0 ? (lowEnd ? 28 : 40) : detail === 1 ? (lowEnd ? 44 : 72) : lowEnd ? 64 : MAX_NODES;
+      nodeCount = Math.max(floor, Math.min(density, ceiling));
     };
 
-    // ------------------------------------------------------------ static art
-    const paintNebula = (ctx: CanvasRenderingContext2D) => {
-      const radius = Math.max(width * 0.72, Math.hypot(width, height) * 0.5);
-      const nebula = ctx.createRadialGradient(width * 0.58, height * 0.38, 0, width * 0.58, height * 0.38, radius);
-      nebula.addColorStop(0, "rgba(24, 95, 255, 0.16)");
-      nebula.addColorStop(0.24, "rgba(0, 223, 255, 0.07)");
-      nebula.addColorStop(0.56, "rgba(73, 37, 152, 0.08)");
-      nebula.addColorStop(1, "rgba(0, 0, 0, 0)");
-      ctx.fillStyle = nebula;
-      ctx.fillRect(0, 0, width, height);
-    };
-
-    const drawHudPanel = (
-      ctx: CanvasRenderingContext2D,
-      x: number,
-      y: number,
-      panelWidth: number,
-      panelHeight: number,
-      alpha: number
-    ) => {
-      ctx.strokeStyle = `rgba(0, 226, 255, ${alpha})`;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(x + 18, y);
-      ctx.lineTo(x + panelWidth, y);
-      ctx.lineTo(x + panelWidth, y + panelHeight - 16);
-      ctx.lineTo(x + panelWidth - 16, y + panelHeight);
-      ctx.lineTo(x, y + panelHeight);
-      ctx.lineTo(x, y + 18);
-      ctx.closePath();
-      ctx.stroke();
-
-      ctx.fillStyle = `rgba(0, 210, 255, ${alpha * 0.22})`;
-      for (let i = 0; i < 5; i += 1) {
-        ctx.fillRect(x + 18 + i * 20, y + 18, 8, 3);
-      }
-    };
-
-    /** Everything that does not animate: glow, rings, beam and HUD panels. */
-    const paintScenery = (ctx: CanvasRenderingContext2D) => {
-      const glowRadius = Math.max(Math.min(width, height) * 0.7, Math.hypot(width, height) * 0.42);
-      const horizonGlow = ctx.createRadialGradient(width * 0.72, height * 0.32, 0, width * 0.72, height * 0.32, glowRadius);
-      horizonGlow.addColorStop(0, "rgba(0, 174, 255, 0.14)");
-      horizonGlow.addColorStop(0.42, "rgba(0, 174, 255, 0.055)");
-      horizonGlow.addColorStop(1, "rgba(0, 174, 255, 0)");
-      ctx.fillStyle = horizonGlow;
-      ctx.fillRect(0, 0, width, height);
-
-      const horizonRadius = Math.min(width, height) * (detail === 0 ? 0.58 : 0.72);
-      const horizonX = width * (detail === 0 ? 1.08 : 1.02);
-      const horizonY = height * (detail === 0 ? 0.22 : 0.28);
-
-      ctx.strokeStyle = "rgba(180, 245, 255, 0.34)";
-      ctx.lineWidth = detail === 0 ? 1 : 1.5;
-      ctx.beginPath();
-      ctx.arc(horizonX, horizonY, horizonRadius, Math.PI * 0.72, Math.PI * 1.35);
-      ctx.stroke();
-
-      ctx.strokeStyle = "rgba(0, 210, 255, 0.13)";
-      ctx.lineWidth = 1;
-      for (let i = 0; i < 4; i += 1) {
-        ctx.beginPath();
-        ctx.ellipse(
-          width * 0.72,
-          height * (detail === 0 ? 0.35 : 0.42),
-          Math.min(width, height) * (0.34 + i * 0.11),
-          Math.min(width, height) * (0.08 + i * 0.018),
-          -0.35,
-          0,
-          Math.PI * 2
-        );
-        ctx.stroke();
-      }
-
-      const ringX = width * (detail === 0 ? 0.78 : 0.8);
-      const ringY = height * (detail === 0 ? 0.82 : 0.78);
-      const ringRadius = Math.min(width, height) * (detail === 0 ? 0.16 : 0.22);
-      for (let i = 0; i < 8; i += 1) {
-        ctx.strokeStyle = `rgba(0, 229, 255, ${0.18 - i * 0.015})`;
-        ctx.lineWidth = i === 1 ? 2 : 1;
-        ctx.beginPath();
-        ctx.ellipse(ringX, ringY, ringRadius * (0.38 + i * 0.12), ringRadius * (0.08 + i * 0.025), 0, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-
-      const beam = ctx.createLinearGradient(ringX, ringY - ringRadius * 1.4, ringX, ringY + 8);
-      beam.addColorStop(0, "rgba(0, 221, 255, 0)");
-      beam.addColorStop(0.62, "rgba(0, 221, 255, 0.14)");
-      beam.addColorStop(1, "rgba(0, 221, 255, 0.34)");
-      ctx.fillStyle = beam;
-      ctx.fillRect(ringX - 2, ringY - ringRadius * 1.4, 4, ringRadius * 1.42);
-
-      // The narrow third panel needs >=120px to fit its status dots, so it is
-      // desktop-only; tablets keep the two wide panels.
-      if (detail >= 1) {
-        drawHudPanel(ctx, width * 0.055, height * 0.15, width * 0.22, height * 0.2, 0.23);
-        drawHudPanel(ctx, width * 0.06, height * 0.67, width * 0.2, height * 0.17, 0.19);
-        if (detail >= 2) drawHudPanel(ctx, width * 0.84, height * 0.25, width * 0.1, height * 0.26, 0.14);
-      }
-    };
-
-    const paintRain = (ctx: CanvasRenderingContext2D, time: number) => {
-      ctx.fillStyle = "rgba(0, 229, 255, 0.14)";
-      for (let i = 0; i < 35; i += 1) {
-        const x = width * 0.55 + ((i * 29) % 340);
-        const y = ((i * 83 + time * 0.012) % height) - 50;
-        ctx.fillRect(x, y, 1, 18 + (i % 5) * 12);
-      }
-    };
-
-    // ---------------------------------------------------------------- frames
     const renderFrame = (time: number) => {
       context.clearRect(0, 0, width, height);
-      paintNebula(context);
 
-      const pulse = reducedMotion ? 0 : Math.sin(time * 0.0014) * 0.5 + 0.5;
-      const starScale = detail === 0 ? 0.85 : 1;
+      const centerX = width * 0.5;
+      const centerY = height * 0.5;
+      // Radius reaches past the corners so no part of the page is left empty.
+      const fieldRadius = Math.hypot(width, height) * 0.53;
 
-      for (let i = 0; i < starCount; i += 1) {
-        const star = stars[i];
-        const drift = reducedMotion ? 0 : time * 0.000018 * (0.25 + star.z);
-        const x = ((star.x + drift) % 1) * width;
-        const y = star.y * height;
-        const opacity = 0.2 + star.z * 0.54 + pulse * 0.08;
-        const color = star.tone === 0 ? "180, 245, 255" : star.tone === 1 ? "0, 184, 255" : "114, 90, 255";
+      const glow = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, Math.max(width, height) * 0.75);
+      glow.addColorStop(0, "rgba(24, 122, 82, 0.11)");
+      glow.addColorStop(0.55, "rgba(16, 84, 62, 0.045)");
+      glow.addColorStop(1, "rgba(0, 0, 0, 0)");
+      context.fillStyle = glow;
+      context.fillRect(0, 0, width, height);
 
-        context.fillStyle = `rgba(${color}, ${opacity})`;
-        context.beginPath();
-        context.arc(x, y, star.size * starScale * (0.75 + star.z), 0, Math.PI * 2);
-        context.fill();
+      // Roughly one full turn every 4 minutes.
+      const rotation = time * 0.000025;
+      const cosRotation = Math.cos(rotation);
+      const sinRotation = Math.sin(rotation);
+
+      // Using only the first `nodeCount` spiral points would shrink the
+      // field, so widen them back out to the viewport corners at any count.
+      const coverage = Math.sqrt(MAX_NODES / nodeCount);
+      const dotScale = Math.min(1.2, Math.max(0.8, Math.min(width, height) / 900));
+
+      const projected: ProjectedNode[] = [];
+      for (let i = 0; i < nodeCount; i += 1) {
+        const node = nodes[i];
+        projected.push({
+          x: centerX + (node.x * cosRotation - node.y * sinRotation) * fieldRadius * coverage,
+          y: centerY + (node.x * sinRotation + node.y * cosRotation) * fieldRadius * coverage,
+          z: node.z,
+          scale: 1 + node.z * 0.12,
+          size: node.size,
+          phase: node.phase,
+        });
       }
 
-      if (hasSceneryLayer) context.drawImage(sceneryCanvas, 0, 0, width, height);
-      else paintScenery(context);
+      // Every dot connects to every other dot. Batching the lines into two
+      // paths keeps the very faint mesh cheap to draw even with 140 dots.
+      const backLines = new Path2D();
+      const frontLines = new Path2D();
+      for (let i = 0; i < projected.length; i += 1) {
+        for (let j = i + 1; j < projected.length; j += 1) {
+          const a = projected[i];
+          const b = projected[j];
+          const path = (a.z + b.z) >= 0 ? frontLines : backLines;
+          path.moveTo(a.x, a.y);
+          path.lineTo(b.x, b.y);
+        }
+      }
+      context.lineWidth = 0.55 * dotScale;
+      context.strokeStyle = "rgba(104, 255, 176, 0.008)";
+      context.stroke(backLines);
+      context.strokeStyle = "rgba(104, 255, 176, 0.016)";
+      context.stroke(frontLines);
 
-      if (detail >= 1) paintRain(context, time);
+      // A few light packets drift along the connections, offset per pair so
+      // the network never blinks all at once.
+      const pulseStride = lowEnd ? 10 : Math.max(6, Math.round(nodeCount / 12));
+      for (let i = 0; i < projected.length; i += 1) {
+        const a = projected[i];
+        for (let j = i + 1; j < projected.length; j += 1) {
+          if ((i + j) % pulseStride !== 0) continue;
+          const b = projected[j];
+          const progress = (time * 0.00022 + a.phase + b.phase * 0.61) % 1;
+          const depthLight = 0.65 + ((a.z + b.z) * 0.5 + 1) * 0.18;
+          context.fillStyle = `rgba(190, 255, 220, ${0.1 * depthLight})`;
+          context.beginPath();
+          context.arc(a.x + (b.x - a.x) * progress, a.y + (b.y - a.y) * progress, 1.1 * dotScale, 0, TAU);
+          context.fill();
+        }
+      }
+
+      // Dots on top, brighter as they come toward the viewer.
+      for (const dot of projected) {
+        const front = (dot.z + 1) * 0.5;
+        const twinkle = reducedMotion ? 1 : 0.82 + Math.sin(time * 0.0015 + dot.phase * TAU) * 0.18;
+        const size = dot.size * dot.scale * dotScale * 1.8;
+
+        context.fillStyle = `rgba(64, 255, 150, ${(0.05 + front * 0.06) * twinkle})`;
+        context.beginPath();
+        context.arc(dot.x, dot.y, size * 3.2, 0, TAU);
+        context.fill();
+
+        context.fillStyle = `rgba(70, 255, 158, ${(0.16 + front * 0.2) * twinkle})`;
+        context.beginPath();
+        context.arc(dot.x, dot.y, size * 1.8, 0, TAU);
+        context.fill();
+
+        context.fillStyle = `rgba(200, 255, 224, ${0.6 + front * 0.32})`;
+        context.beginPath();
+        context.arc(dot.x, dot.y, size * 0.7, 0, TAU);
+        context.fill();
+      }
     };
 
     const draw = (time: number) => {
@@ -250,17 +225,6 @@ export function AnimatedBackground() {
       }
     };
 
-    // --------------------------------------------------------------- sizing
-    const paintSceneryLayer = () => {
-      hasSceneryLayer = false;
-      if (!sceneryContext || canvas.width < 1 || canvas.height < 1) return;
-      sceneryCanvas.width = canvas.width;
-      sceneryCanvas.height = canvas.height;
-      sceneryContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-      paintScenery(sceneryContext);
-      hasSceneryLayer = true;
-    };
-
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
       width = Math.max(1, Math.round(rect.width) || window.innerWidth);
@@ -268,13 +232,12 @@ export function AnimatedBackground() {
 
       classify();
       fitPixelRatio();
+      fitNodeCount();
 
       canvas.width = Math.max(1, Math.floor(width * pixelRatio));
       canvas.height = Math.max(1, Math.floor(height * pixelRatio));
       context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
 
-      fitStarCount();
-      paintSceneryLayer();
       lastPaint = 0;
       if (reducedMotion) renderFrame(0);
     };
@@ -289,7 +252,6 @@ export function AnimatedBackground() {
       });
     };
 
-    // ------------------------------------------------------------- listeners
     const onVisibilityChange = () => {
       if (document.visibilityState === "visible") {
         queueResize();
@@ -338,8 +300,6 @@ export function AnimatedBackground() {
   return (
     <div className="portfolio-backdrop" aria-hidden="true">
       <canvas ref={canvasRef} className="space-planet-canvas" />
-      <div className="background-scanlines" />
-      <div className="background-vignette" />
     </div>
   );
 }

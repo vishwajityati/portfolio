@@ -76,9 +76,15 @@ export async function POST(request: NextRequest) {
       : typeof formLoadedAtRaw === "string" ? Number(formLoadedAtRaw)
       : 0;
 
-    // Honeypot must be empty AND the form must have been open for at least 3 seconds.
-    // Bots fill hidden fields and submit instantly; humans cannot do either.
-    const isBot = website || (formLoadedAt > 0 && Date.now() - formLoadedAt < 3000) || formLoadedAt === 0;
+    // Honeypot must be empty AND the form must have been open for a plausible
+    // interval. Reject future, negative and implausibly old timestamps as well as
+    // instant submissions so a bot cannot pass by sending an arbitrary number.
+    const formAge = Date.now() - formLoadedAt;
+    const isBot = Boolean(website)
+      || !Number.isFinite(formLoadedAt)
+      || formLoadedAt <= 0
+      || formAge < 3000
+      || formAge > 7 * 24 * 60 * 60 * 1000;
 
     if (isBot || name.length < 1 || name.length > 100 || /[\u0000-\u001f\u007f]/.test(name) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254 || !/^\d{10}$/.test(phone) || message.length > MAX_MESSAGE_LENGTH || !message.trim()) {
       return NextResponse.json({ error: "Enter your name, a valid email, a 10-digit phone number, and a message." }, { status: 400 });

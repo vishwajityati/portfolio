@@ -1,18 +1,18 @@
-export interface Skill {
+export interface Knowledge {
   name: string;
   /**
    * Self-assessed proficiency, 0–100.
    *
    * The public bar is drawn from stepped CSS classes rather than an inline `width`, so the value
    * is snapped to the nearest 5 to guarantee a matching class always exists. That keeps
-   * `style-src-attr 'none'` intact — see `.skill-bar-*` in features/portfolio/skills/Skills.css.
+   * `style-src-attr 'none'` intact — see `.knowledge-bar-*` in features/portfolio/knowledge/Knowledge.css.
    */
   level: number;
 }
 
-export interface SkillGroup {
+export interface KnowledgeGroup {
   title: string;
-  skills: Skill[];
+  knowledge: Knowledge[];
 }
 
 export interface Education {
@@ -20,6 +20,6 @@ export interface Education {
   institution: string;
   period: string;
   summary: string;
-  skillGroups: SkillGroup[];
+  knowledgeGroups: KnowledgeGroup[];
   beyond: string;
 }

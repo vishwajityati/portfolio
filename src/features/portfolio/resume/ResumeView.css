@@ -4,7 +4,7 @@
     min-height: 100vh;
     padding: 25px 20px 50px;
     color: var(--text);
-    background: var(--bg);
+    background: transparent;
 }
 
 .resume-toolbar {

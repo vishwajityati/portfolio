@@ -6,13 +6,13 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 import type { PortfolioContent } from "@/types";
-import "./Skills.css";
+import "./Knowledge.css";
 
-type SkillCategory = {
+type KnowledgeCategory = {
   number: string;
   title: string;
   icon: ReactNode;
-  skills: PortfolioContent["education"][number]["skillGroups"][number]["skills"];
+  knowledge: PortfolioContent["education"][number]["knowledgeGroups"][number]["knowledge"];
 };
 
 const categoryIcons = [
@@ -31,51 +31,51 @@ function getDots(level?: number) {
   return 1;
 }
 
-function SkillCard({
+function KnowledgeCard({
   category,
   index,
 }: {
-  category: SkillCategory;
+  category: KnowledgeCategory;
   index: number;
 }) {
   return (
     <article
-      className="skill-card "
-      // className={`skill-card reveal reveal-delay-tight-${Math.min(
+      className="knowledge-card "
+      // className={`knowledge-card reveal reveal-delay-tight-${Math.min(
       //   index,
       //   3
       // )}`}
     >
-      <div className="skill-card-header">
-        <div className="skill-card-icon">
+      <div className="knowledge-card-header">
+        <div className="knowledge-card-icon">
           {category.icon}
         </div>
 
-        <div className="skill-card-heading">
+        <div className="knowledge-card-heading">
           <h3>{category.title.toUpperCase()}</h3>
         </div>
       </div>
 
-      <div className="skill-card-divider" />
+      <div className="knowledge-card-divider" />
 
-      <div className="skill-list">
-        {category.skills.map((skill, skillIndex) => {
-          const dots = getDots(skill.level);
+      <div className="knowledge-list">
+        {category.knowledge.map((knowledge, knowledgeIndex) => {
+          const dots = getDots(knowledge.level);
 
           return (
             <div
-              className="skill-item"
-              key={`${skill.name}-${skillIndex}`}
+              className="knowledge-item"
+              key={`${knowledge.name}-${knowledgeIndex}`}
             >
-              <span className="skill-name">
-                {skill.name || "Unnamed skill"}
+              <span className="knowledge-name">
+                {knowledge.name || "Unnamed knowledge"}
               </span>
 
-              <span className="skill-indicator">
+              <span className="knowledge-indicator">
                 {[0, 1, 2].map((dot) => (
                   <span
                     key={dot}
-                    className={`skill-dot ${
+                    className={`knowledge-dot ${
                       dot < dots ? "active" : ""
                     }`}
                   />
@@ -89,27 +89,27 @@ function SkillCard({
   );
 }
 
-export function Skills({
+export function Knowledge({
   content,
 }: {
   content: PortfolioContent;
 }) {
-  const skillCategories: SkillCategory[] =
-    (content.education[0]?.skillGroups ?? []).map((group, index) => ({
+  const knowledgeCategories: KnowledgeCategory[] =
+    (content.education[0]?.knowledgeGroups ?? []).map((group, index) => ({
       number: String(index + 1).padStart(2, "0"),
       title: group.title,
       icon: categoryIcons[index] ?? <Database size={19} strokeWidth={1.8} />,
-      skills: group.skills,
+      knowledge: group.knowledge,
     }));
 
   return (
     <section
-      className="skills section-shell section-block"
-      id="skills"
+      className="knowledge section-shell section-block"
+      id="knowledge"
     >
       <div className="section-kicker reveal">
         
-        <span>SKILLS</span>
+        <span>KNOWLEDGE</span>
         <i />
       </div>
 
@@ -117,17 +117,17 @@ export function Skills({
         <div>
 
           <h2>
-            Skills  I{" "} 
+            Knowledge  I{" "} 
             <span className="gradient-text">Learning.</span>
           </h2>
         </div>
       </div>
 
-      <div className="skills-grid">
-        {skillCategories.length === 0
-          ? <p className="empty-state">Skills are on their way. Check back soon.</p>
-          : skillCategories.map((category, index) => (
-              <SkillCard
+      <div className="knowledge-grid">
+        {knowledgeCategories.length === 0
+          ? <p className="empty-state">Knowledge is on its way. Check back soon.</p>
+          : knowledgeCategories.map((category, index) => (
+              <KnowledgeCard
                 key={category.title}
                 category={category}
                 index={index}

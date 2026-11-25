@@ -121,11 +121,8 @@ async function handleImageUpload(
   } catch (error: unknown) {
     console.error("Portfolio image upload failed:", error);
 
-    setUploadError(
-      error instanceof Error
-        ? error.message
-        : "Image upload failed. Please try again.",
-    );
+    // Keep SDK/API details in the server console; never surface raw errors to the UI.
+    setUploadError("Image upload failed. Please try again.");
   } finally {
     setUploading(false);
   }

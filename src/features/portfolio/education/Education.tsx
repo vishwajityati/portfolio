@@ -3,7 +3,7 @@ import type { PortfolioContent } from "@/types";
 import "./Education.css";
 
 export function Education({ content }: { content: PortfolioContent }) {
-  const totalSkills = (content.education[0]?.skillGroups ?? []).reduce((total, group) => total + group.skills.length, 0);
+  const totalKnowledge = (content.education[0]?.knowledgeGroups ?? []).reduce((total, group) => total + group.knowledge.length, 0);
 
   return (
     <section className="education section-shell section-block" id="education">
@@ -18,7 +18,7 @@ export function Education({ content }: { content: PortfolioContent }) {
           <p className="institution">{entry.institution}</p>
           <p className="education-description">{entry.summary}</p>
           <div className="beyond-class"><span className="beyond-symbol"></span><div><span className="learning-label">BEYOND THE CLASSROOM</span><p>{entry.beyond}</p></div></div>
-          {/* The skill bars live in their own section now; this is a pointer, not a copy. */}          
+          {/* The knowledge bars live in their own section now; this is a pointer, not a copy. */}          
         </div>
       </article>)}</div>
     </section>

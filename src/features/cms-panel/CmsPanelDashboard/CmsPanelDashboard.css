@@ -969,7 +969,7 @@
     .analytics-main-grid,
     .analytics-bottom-grid,
     .admin-shortcut-grid,
-    .skills-admin-grid {
+    .knowledge-admin-grid {
         grid-template-columns: minmax(0, 1fr);
         min-width: 0;
     }
@@ -980,7 +980,7 @@
     .analytics-chart-area,
     .analytics-note-panel,
     .content-entry-card,
-    .skills-admin-card,
+    .knowledge-admin-card,
     .inbox-panel,
     .admin-settings-section {
         width: 100%;
@@ -1088,29 +1088,29 @@
 
     .analytics-panel,
     .content-entry-card,
-    .skills-admin-card,
+    .knowledge-admin-card,
     .inbox-panel,
     .admin-settings-section {
         padding: 12px;
     }
 
-    .skills-admin-row {
+    .knowledge-admin-row {
         grid-template-columns: minmax(0, 1fr) 68px 34px;
     }
 
-    .skills-admin-skill-number {
+    .knowledge-admin-knowledge-number {
         display: none;
     }
 
-    .skills-admin-name {
+    .knowledge-admin-name {
         grid-column: 1;
     }
 
-    .skills-admin-level {
+    .knowledge-admin-level {
         grid-column: 2;
     }
 
-    .skills-admin-delete {
+    .knowledge-admin-delete {
         grid-column: 3;
     }
 }
@@ -1454,7 +1454,7 @@
     .admin-dashboard-layout .analytics-panel,
     .admin-dashboard-layout .analytics-kpi,
     .admin-dashboard-layout .content-entry-card,
-    .admin-dashboard-layout .skills-admin-card,
+    .admin-dashboard-layout .knowledge-admin-card,
     .admin-dashboard-layout .inbox-panel,
     .admin-dashboard-layout .admin-settings-section {
         width: 100%;
@@ -1466,7 +1466,7 @@
     .admin-dashboard-layout .analytics-main-grid,
     .admin-dashboard-layout .analytics-bottom-grid,
     .admin-dashboard-layout .admin-shortcut-grid,
-    .admin-dashboard-layout .skills-admin-grid {
+    .admin-dashboard-layout .knowledge-admin-grid {
         grid-template-columns: minmax(0, 1fr);
         min-width: 0;
     }
@@ -1522,7 +1522,7 @@
 
     .admin-dashboard-layout .analytics-kpi-grid,
     .admin-dashboard-layout .admin-shortcut-grid,
-    .admin-dashboard-layout .skills-admin-grid {
+    .admin-dashboard-layout .knowledge-admin-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 10px;
     }
@@ -1742,7 +1742,7 @@
     .admin-dashboard-layout .analytics-panel,
     .admin-dashboard-layout .analytics-kpi,
     .admin-dashboard-layout .content-entry-card,
-    .admin-dashboard-layout .skills-admin-card,
+    .admin-dashboard-layout .knowledge-admin-card,
     .admin-dashboard-layout .inbox-panel,
     .admin-dashboard-layout .admin-settings-section {
         width: 100%;
@@ -1754,7 +1754,7 @@
     .admin-dashboard-layout .analytics-main-grid,
     .admin-dashboard-layout .analytics-bottom-grid,
     .admin-dashboard-layout .admin-shortcut-grid,
-    .admin-dashboard-layout .skills-admin-grid,
+    .admin-dashboard-layout .knowledge-admin-grid,
     .admin-dashboard-layout .content-fields-grid,
     .admin-dashboard-layout .content-entry-card .content-fields-grid,
     .admin-dashboard-layout .inbox-layout {

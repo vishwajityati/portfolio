@@ -13,9 +13,9 @@ npm-debug.log*
 
 # Environment files — never commit real values.
 # `.env.example` is the checked-in template; everything else stays local.
-.env
-.env.*
-!.env.example
+# .env
+# .env.*
+# !.env.example
 .neon
 
 # Local databases

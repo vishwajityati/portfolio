@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import {
   BriefcaseBusiness,
   FolderKanban,
@@ -8,7 +8,9 @@ import {
   House,
   Layers,
   Mail,
+  Menu,
   UserRound,
+  X,
 } from "lucide-react";
 
 import { navigationItems } from "@/data/navigation";
@@ -20,18 +22,27 @@ const navigationIcons: Record<
 > = {
   home: House,
   about: UserRound,
-  skills: Layers,
+  knowledge: Layers,
   education: GraduationCap,
   projects: FolderKanban,
   experience: BriefcaseBusiness,
   contact: Mail,
 };
 
+// The four destinations that stay on the mobile tab bar; everything else lives in the menu.
+const primaryIds = ["home", "about", "projects", "contact"] as const;
+
 export function BottomNav({ active }: { active: string }) {
   const [sectionsOpen, setSectionsOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  const sectionItems = navigationItems.filter(
-    ({ id }) => id !== "home" && id !== "contact"
+  const primaryItems = navigationItems.filter(({ id }) =>
+    (primaryIds as readonly string[]).includes(id)
+  );
+
+  const sectionsActive = navigationItems.some(
+    ({ id }) => !primaryIds.includes(id as (typeof primaryIds)[number]) && active === id
   );
 
   const navigateToSection =
@@ -46,162 +57,150 @@ export function BottomNav({ active }: { active: string }) {
       });
     };
 
-  const sectionsActive = sectionItems.some(
-    ({ id }) => active === id
-  );
+  const closeSections = () => {
+    setSectionsOpen(false);
+    menuButtonRef.current?.focus();
+  };
+
+  useEffect(() => {
+    if (!sectionsOpen) return;
+
+    // A class (rather than an inline style) keeps this compatible with the strict CSP.
+    document.body.classList.add("nav-menu-open");
+    closeButtonRef.current?.focus();
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeSections();
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.body.classList.remove("nav-menu-open");
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [sectionsOpen]);
 
   return (
-    <nav className="bottom-nav" aria-label="Main navigation">
-
-      {/* =====================================================
-          DESKTOP NAVIGATION
-          ===================================================== */}
-
-      <div className="desktop-navigation">
-
-        {navigationItems.map(({ id, label }, index) => {
-          const Icon = navigationIcons[id];
-
-          return (
-            <a
-              key={id}
-              className={`nav-link ${
-                active === id ? "active" : ""
-              }`}
-              href="/"
-              onClick={navigateToSection(id)}
-              aria-label={label}
-              aria-current={
-                active === id ? "location" : undefined
-              }
-            >            
-              <span className="nav-icon" aria-hidden="true">
-                <Icon size={16} strokeWidth={1.8} />
-              </span>
-
-              <span className="nav-label">
-                {label}
-              </span>
-            </a>
-          );
-        })}
-
-      </div>
-
-
-      {/* =====================================================
-          MOBILE NAVIGATION
-          ===================================================== */}
-
-      <div className="mobile-navigation">
-
-        {/* HOME */}
-
-        <a
-          className={`mobile-nav-button ${
-            active === "home" ? "active" : ""
-          }`}
-          href="/"
-          onClick={navigateToSection("home")}
-          aria-label="Home"
-          aria-current={
-            active === "home" ? "location" : undefined
-          }
-        >
-          <House
-            size={20}
-            strokeWidth={1.8}
-            aria-hidden="true"
-          />
-
-          <span>Home</span>
-        </a>
-
-
-        {/* SECTIONS */}
-
-        <button
-          className={`mobile-nav-button ${
-            sectionsOpen || sectionsActive ? "active" : ""
-          }`}
-          type="button"
-          aria-expanded={sectionsOpen}
-          aria-controls="mobile-section-links"
-          onClick={() => setSectionsOpen((open) => !open)}
-        >
-          <FolderKanban
-            size={20}
-            strokeWidth={1.8}
-            aria-hidden="true"
-          />
-
-          <span>Sections</span>
-        </button>
-
-
-        {/* CONTACT */}
-
-        <a
-          className={`mobile-nav-button ${
-            active === "contact" ? "active" : ""
-          }`}
-          href="/"
-          onClick={navigateToSection("contact")}
-          aria-label="Contact"
-          aria-current={
-            active === "contact" ? "location" : undefined
-          }
-        >
-          <Mail
-            size={20}
-            strokeWidth={1.8}
-            aria-hidden="true"
-          />
-
-          <span>Contact</span>
-        </a>
-
-      </div>
-
-
-      {/* =====================================================
-          MOBILE SECTIONS POPUP
-          ===================================================== */}
-
-      {sectionsOpen && (
-        <div
-          className="mobile-section-links"
-          id="mobile-section-links"
-          aria-label="Portfolio sections"
-        >
-          {sectionItems.map(({ id, label }) => {
+    <>
+      <nav className="bottom-nav" aria-label="Main navigation">
+        {/* Desktop: every section in one pill. */}
+        <div className="desktop-navigation">
+          {navigationItems.map(({ id, label }) => {
             const Icon = navigationIcons[id];
 
             return (
               <a
                 key={id}
-                href="/"
-                className={
-                  active === id ? "active" : ""
-                }
-                aria-current={
-                  active === id ? "location" : undefined
-                }
+                className={`nav-link ${active === id ? "active" : ""}`}
+                href={`#${id}`}
                 onClick={navigateToSection(id)}
+                aria-label={label}
+                aria-current={active === id ? "location" : undefined}
               >
-                <Icon
-                  size={16}
-                  strokeWidth={1.8}
-                  aria-hidden="true"
-                />
+                <span className="nav-icon" aria-hidden="true">
+                  <Icon size={16} strokeWidth={1.8} />
+                </span>
 
-                <span>{label}</span>
+                <span className="nav-label">{label}</span>
               </a>
             );
           })}
         </div>
-      )}
 
-    </nav>
+        {/* Mobile: four primary destinations plus the section menu. */}
+        <div className="mobile-navigation">
+          {primaryItems.map(({ id, label }) => {
+            const Icon = navigationIcons[id];
+
+            return (
+              <a
+                key={id}
+                className={`mobile-nav-button ${active === id ? "active" : ""}`}
+                href={`#${id}`}
+                onClick={navigateToSection(id)}
+                aria-label={label}
+                aria-current={active === id ? "location" : undefined}
+              >
+                <Icon size={19} strokeWidth={1.8} aria-hidden="true" />
+                <span>{label}</span>
+              </a>
+            );
+          })}
+
+          <button
+            ref={menuButtonRef}
+            className={`mobile-nav-button mobile-nav-more ${
+              sectionsOpen || sectionsActive ? "active" : ""
+            }`}
+            type="button"
+            aria-label="More sections"
+            aria-haspopup="dialog"
+            aria-expanded={sectionsOpen}
+            aria-controls="mobile-nav-sheet"
+            onClick={() => setSectionsOpen((open) => !open)}
+          >
+            <Menu size={19} strokeWidth={1.8} aria-hidden="true" />
+            <span>More</span>
+          </button>
+        </div>
+      </nav>
+
+      {/* The sheet is a sibling of the transformed nav so its fixed backdrop covers the viewport. */}
+      <button
+        className="mobile-nav-backdrop"
+        type="button"
+        aria-label="Close navigation menu"
+        tabIndex={sectionsOpen ? 0 : -1}
+        hidden={!sectionsOpen}
+        onClick={closeSections}
+      />
+
+      <div
+        className="mobile-nav-sheet"
+        id="mobile-nav-sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="mobile-nav-title"
+        hidden={!sectionsOpen}
+      >
+        <div className="mobile-nav-handle" aria-hidden="true" />
+
+        <div className="mobile-nav-sheet-header">
+          <h2 className="mobile-nav-sheet-title" id="mobile-nav-title">
+            Navigate
+          </h2>
+
+          <button
+            ref={closeButtonRef}
+            className="mobile-nav-close"
+            type="button"
+            aria-label="Close navigation menu"
+            onClick={closeSections}
+          >
+            <X size={18} strokeWidth={1.8} aria-hidden="true" />
+          </button>
+        </div>
+
+        <nav className="mobile-nav-grid" aria-label="All sections">
+          {navigationItems.map(({ id, label }) => {
+            const Icon = navigationIcons[id];
+
+            return (
+              <a
+                key={id}
+                href={`#${id}`}
+                className={active === id ? "active" : undefined}
+                aria-current={active === id ? "location" : undefined}
+                onClick={navigateToSection(id)}
+              >
+                <Icon size={17} strokeWidth={1.8} aria-hidden="true" />
+                <span>{label}</span>
+              </a>
+            );
+          })}
+        </nav>
+      </div>
+    </>
   );
 }
